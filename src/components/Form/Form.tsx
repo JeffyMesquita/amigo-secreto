@@ -8,7 +8,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, Gift, Phone, Plus, Minus, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Users,
+  Gift,
+  Phone,
+  Plus,
+  Minus,
+  Loader2,
+  Moon,
+  Sun,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
@@ -31,7 +56,7 @@ const participantSchema = z.object({
   whatsapp: z
     .string()
     .regex(
-      /^$$\d{2}$$ \d{4,5}-\d{4}$/,
+      /^$$\d{2}$$ (?:\d{4}|\d{5})-\d{4}$/,
       "Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX"
     ),
 });
@@ -44,6 +69,8 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+// const STORAGE_KEY = "amigo-secreto-draft";
 
 export function Form() {
   useEffect(() => {
@@ -58,6 +85,11 @@ export function Form() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [participantToRemove, setParticipantToRemove] = useState<number | null>(
+    null
+  );
+
   const {
     register,
     control,
@@ -79,6 +111,15 @@ export function Form() {
     control,
     name: "participants",
   });
+
+  // Dark mode
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     if (showSuccess) {
@@ -129,169 +170,243 @@ export function Form() {
     return numbers.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
   };
 
+  const handleRemoveParticipant = (index: number) => {
+    setParticipantToRemove(index);
+  };
+
+  const confirmRemoveParticipant = () => {
+    if (participantToRemove !== null) {
+      remove(participantToRemove);
+      setParticipantToRemove(null);
+    }
+  };
+
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 shadow-lg">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-          Sorteador de Amigo Secreto
-        </CardTitle>
-        <p className="text-center text-muted-foreground">
-          Crie seu sorteio de forma fácil e divertida!
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Label htmlFor="title">Título do Amigo Secreto</Label>
-            <div className="relative bg-purple-50">
-              <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
-              <Input
-                id="title"
-                {...register("title")}
-                className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
-                placeholder="Ex: Amigo Secreto da Família"
-              />
-            </div>
-            {errors.title && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.title.message}
-              </p>
-            )}
-          </motion.div>
-
-          <div className="space-y-4">
-            <Label>Participantes (mínimo 3)</Label>
-            <AnimatePresence>
-              {fields.map((field, index) => (
-                <motion.div
-                  key={field.id}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 50 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-4"
-                >
-                  <div className="flex flex-col sm:flex-row gap-4 items-start">
-                    <div className="flex-1 w-full bg-purple-50">
-                      <div className="relative ">
-                        <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
-                        <Input
-                          {...register(`participants.${index}.name`)}
-                          className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
-                          placeholder="Nome/Apelido"
-                        />
-                      </div>
-                      {errors.participants?.[index]?.name && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.participants[index]?.name?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex-1 w-full bg-purple-50">
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
-                        <Controller
-                          name={`participants.${index}.whatsapp`}
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              {...field}
-                              className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
-                              placeholder="(XX) XXXXX-XXXX"
-                              onChange={(e) =>
-                                field.onChange(formatWhatsApp(e.target.value))
-                              }
-                            />
-                          )}
-                        />
-                      </div>
-                      {errors.participants?.[index]?.whatsapp && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.participants[index]?.whatsapp?.message}
-                        </p>
-                      )}
-                    </div>
-                    {index > 2 && (
-                      <Button
-                        title="Remover participante"
-                        aria-label="Remover participante"
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => remove(index)}
-                        className="bg-red-100 hover:bg-red-200 text-red-500 self-center sm:self-start mt-2 sm:mt-0"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  {index < fields.length - 1 && (
-                    <div className="my-6 h-[2px] animated-gradient" />
-                  )}
-                </motion.div>
-              ))}
-            </AnimatePresence>
+    <TooltipProvider>
+      <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 shadow-lg">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+              Sorteador de Amigo Secreto
+            </CardTitle>
             <Button
-              title="Adicionar participante"
-              aria-label="Adicionar participante"
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => append({ name: "", whatsapp: "" })}
-              className="mt-2 bg-green-100 hover:bg-green-200 text-green-600"
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="rounded-full"
             >
-              <Plus className="h-4 w-4 mr-2" /> Adicionar Participante
-            </Button>
-          </div>
-
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              title="Gerar Amigo Secreto"
-              aria-label="Gerar Amigo Secreto"
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Gerando Amigo Secreto...
-                </>
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
               ) : (
-                "Gerar Amigo Secreto"
+                <Moon className="h-5 w-5" />
               )}
             </Button>
-          </motion.div>
-        </form>
+          </div>
+          <p className="text-center text-muted-foreground">
+            Crie seu sorteio de forma fácil e divertida!
+          </p>
+          <div className="text-sm text-center text-muted-foreground">
+            Total de participantes: {fields.length}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Label htmlFor="title">Título do Amigo Secreto</Label>
+              <div className="relative bg-purple-50">
+                <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Input
+                      id="title"
+                      {...register("title")}
+                      className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                      placeholder="Ex: Amigo Secreto da Família"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Digite um título para identificar seu sorteio</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.title.message}
+                </p>
+              )}
+            </motion.div>
 
-        <AnimatePresence>
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mt-4 p-4 bg-green-100 text-green-700 rounded-md text-center"
-            >
-              Amigo Secreto gerado com sucesso! Os participantes foram
-              notificados.
+            <div className="space-y-4">
+              <Label>Participantes (mínimo 3)</Label>
+              <AnimatePresence>
+                {fields.map((field, index) => (
+                  <motion.div
+                    key={field.id}
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 50 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-4 items-start">
+                      <div className="flex-1 w-full bg-purple-50">
+                        <div className="relative ">
+                          <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Input
+                                {...register(`participants.${index}.name`)}
+                                className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                                placeholder="Nome/Apelido"
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Digite o nome ou apelido do participante</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        {errors.participants?.[index]?.name && (
+                          <p className="text-red-500 text-sm mt-1 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
+                            {errors.participants[index]?.name?.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex-1 w-full bg-purple-50">
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Controller
+                                name={`participants.${index}.whatsapp`}
+                                control={control}
+                                render={({ field }) => (
+                                  <Input
+                                    {...field}
+                                    className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                                    placeholder="(XX) XXXXX-XXXX"
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        formatWhatsApp(e.target.value)
+                                      )
+                                    }
+                                  />
+                                )}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Digite o número do WhatsApp com DDD</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        {errors.participants?.[index]?.whatsapp && (
+                          <p className="text-red-500 text-sm mt-1 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
+                            {errors.participants[index]?.whatsapp?.message}
+                          </p>
+                        )}
+                      </div>
+                      {index > 2 && (
+                        <Button
+                          title="Remover participante"
+                          aria-label="Remover participante"
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          className="bg-red-100 hover:bg-red-200 text-red-500 self-center sm:self-start mt-2 sm:mt-0"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {index < fields.length - 1 && (
+                      <div className="my-6 h-[2px] animated-gradient" />
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <Button
+                title="Adicionar participante"
+                aria-label="Adicionar participante"
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ name: "", whatsapp: "" })}
+                className="mt-2 bg-green-100 hover:bg-green-200 text-green-600"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Adicionar Participante
+              </Button>
+            </div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                title="Gerar Amigo Secreto"
+                aria-label="Gerar Amigo Secreto"
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Gerando Amigo Secreto...
+                  </>
+                ) : (
+                  "Gerar Amigo Secreto"
+                )}
+              </Button>
             </motion.div>
-          )}
-          {errorMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mt-4 p-4 bg-red-100 text-red-700 rounded-md text-center"
-            >
-              {errorMessage}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </CardContent>
-    </Card>
+          </form>
+
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 p-4 bg-green-100 text-green-700 rounded-md text-center"
+              >
+                Amigo Secreto gerado com sucesso! Os participantes foram
+                notificados.
+              </motion.div>
+            )}
+            {errorMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 p-4 bg-red-100 text-red-700 rounded-md text-center"
+              >
+                {errorMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+
+      <AlertDialog
+        open={participantToRemove !== null}
+        onOpenChange={() => setParticipantToRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover Participante</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover este participante? Esta ação não
+              pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveParticipant}>
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </TooltipProvider>
   );
 }
