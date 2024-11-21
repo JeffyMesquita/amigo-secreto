@@ -186,14 +186,14 @@ export function Form() {
       <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+            <CardTitle className="text-2xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
               Sorteador de Amigo Secreto
             </CardTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="rounded-full"
+              className="rounded-full flex-shrink-0 hover:bg-purple-100 hover:text-purple-500 dark:hover:bg-pink-100 dark:hover:text-pink-500"
             >
               {isDarkMode ? (
                 <Sun className="h-5 w-5" />
@@ -202,10 +202,10 @@ export function Form() {
               )}
             </Button>
           </div>
-          <p className="text-center text-muted-foreground">
+          <p className="text-center text-muted-foreground font-semibold">
             Crie seu sorteio de forma fácil e divertida!
           </p>
-          <div className="text-sm text-center text-muted-foreground">
+          <div className="text-sm text-center text-muted-foreground font-semibold">
             Total de participantes: {fields.length}
           </div>
         </CardHeader>
@@ -216,8 +216,10 @@ export function Form() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Label htmlFor="title">Título do Amigo Secreto</Label>
-              <div className="relative bg-purple-50">
+              <Label htmlFor="title" className="font-semibold">
+                Título do Amigo Secreto
+              </Label>
+              <div className="relative bg-purple-50  rounded-md overflow-hidden">
                 <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -241,7 +243,7 @@ export function Form() {
             </motion.div>
 
             <div className="space-y-4">
-              <Label>Participantes (mínimo 3)</Label>
+              <Label className="font-semibold">Participantes (mínimo 3)</Label>
               <AnimatePresence>
                 {fields.map((field, index) => (
                   <motion.div
@@ -253,7 +255,7 @@ export function Form() {
                     className="space-y-4"
                   >
                     <div className="flex flex-col sm:flex-row gap-4 items-start">
-                      <div className="flex-1 w-full bg-purple-50">
+                      <div className="flex-1 w-full bg-purple-50 rounded-md overflow-hidden">
                         <div className="relative ">
                           <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
                           <Tooltip>
@@ -275,7 +277,7 @@ export function Form() {
                           </p>
                         )}
                       </div>
-                      <div className="flex-1 w-full bg-purple-50">
+                      <div className="flex-1 w-full bg-purple-50  rounded-md overflow-hidden">
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
                           <Tooltip>
@@ -335,7 +337,7 @@ export function Form() {
                 variant="outline"
                 size="sm"
                 onClick={() => append({ name: "", whatsapp: "" })}
-                className="mt-2 bg-green-100 hover:bg-green-200 text-green-600"
+                className="mt-2 bg-green-100 hover:bg-green-200 text-green-600 dark:bg-green-900 dark:hover:bg-green-800 dark:text-green-200"
               >
                 <Plus className="h-4 w-4 mr-2" /> Adicionar Participante
               </Button>
