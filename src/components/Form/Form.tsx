@@ -33,9 +33,26 @@ import {
   Loader2,
   Moon,
   Sun,
+  Save,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+
+export function useDebounce(value: unknown, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 const animatedGradient = `
   @keyframes gradientAnimation {
@@ -70,7 +87,8 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-// const STORAGE_KEY = "amigo-secreto-draft";
+const STORAGE_KEY = "amigo-secreto-draft";
+const STORAGE_THEME = "amigo-secreto-theme";
 
 export function Form() {
   useEffect(() => {
@@ -89,12 +107,15 @@ export function Form() {
   const [participantToRemove, setParticipantToRemove] = useState<number | null>(
     null
   );
+  const [showDraftSaved, setShowDraftSaved] = useState(false);
 
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
+    watch,
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -112,14 +133,51 @@ export function Form() {
     name: "participants",
   });
 
+  // Watch form changes for auto-save
+  const formValues = watch();
+
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const parsedDraft = JSON.parse(savedDraft);
+        reset(parsedDraft);
+      } catch (error) {
+        console.error("Error loading draft:", error);
+      }
+    }
+  }, [reset]);
+
+  // Auto-save draft
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formValues));
+      setShowDraftSaved(true);
+      setTimeout(() => setShowDraftSaved(false), 5000);
+    }, 20000);
+
+    return () => clearTimeout(saveTimeout);
+  }, [formValues]);
+
   // Dark mode
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
+      localStorage.setItem(STORAGE_THEME, "true");
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem(STORAGE_THEME, "false");
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem(STORAGE_THEME);
+    if (savedTheme === "true") {
+      setIsDarkMode(true);
+    } else {
+      setIsDarkMode(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (showSuccess) {
@@ -383,6 +441,17 @@ export function Form() {
                 className="mt-4 p-4 bg-red-100 text-red-700 rounded-md text-center"
               >
                 {errorMessage}
+              </motion.div>
+            )}
+            {showDraftSaved && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+              >
+                <Save className="h-4 w-4" />
+                Rascunho salvo automaticamente
               </motion.div>
             )}
           </AnimatePresence>
