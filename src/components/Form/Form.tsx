@@ -317,7 +317,7 @@ export function Form() {
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => remove(index)}
+                          onClick={() => handleRemoveParticipant(index)}
                           className="bg-red-100 hover:bg-red-200 text-red-500 self-center sm:self-start mt-2 sm:mt-0"
                         >
                           <Minus className="h-4 w-4" />
