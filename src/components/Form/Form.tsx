@@ -274,11 +274,14 @@ export function Form() {
       <TooltipProvider>
         <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 shadow-lg">
           <CardHeader className="space-y-1">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-2xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-                Sorteador de Amigo Secreto
-              </CardTitle>
+            <div className="flex justify-end items-center">
               <Button
+                title={
+                  isDarkMode ? "Desativar modo escuro" : "Ativar modo escuro"
+                }
+                aria-label={
+                  isDarkMode ? "Desativar modo escuro" : "Ativar modo escuro"
+                }
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsDarkMode(!isDarkMode)}
@@ -291,6 +294,9 @@ export function Form() {
                 )}
               </Button>
             </div>
+            <CardTitle className="text-2xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+              Sorteador de Amigo Secreto
+            </CardTitle>
             <p className="text-center text-muted-foreground font-semibold">
               Crie seu sorteio de forma fácil e divertida!
             </p>
