@@ -38,22 +38,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
-export function useDebounce(value: unknown, delay: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
 const animatedGradient = `
   @keyframes gradientAnimation {
     0% { background-position: 0% 50%; }
@@ -89,6 +73,16 @@ type FormData = z.infer<typeof formSchema>;
 
 const STORAGE_KEY = "amigo-secreto-draft";
 const STORAGE_THEME = "amigo-secreto-theme";
+
+function formatParticipants(data: FormData): FormData {
+  return {
+    ...data,
+    participants: data.participants.map((participant) => ({
+      ...participant,
+      whatsapp: participant.whatsapp.replace(/\D/g, ""), // Remove qualquer caractere não numérico
+    })),
+  };
+}
 
 export function Form() {
   useEffect(() => {
@@ -190,6 +184,10 @@ export function Form() {
   }, [showSuccess]);
 
   const onSubmit = async (data: FormData) => {
+    const formattedData = formatParticipants(data);
+
+    console.log("Form data:", formattedData);
+
     setIsSubmitting(true);
     setErrorMessage("");
     try {
@@ -198,7 +196,7 @@ export function Form() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formattedData),
       });
 
       const result = await response.json();
