@@ -45,15 +45,52 @@ export const metadata: Metadata = {
     },
   ],
   creator: "Jeferson Antonio Mesquita",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    images: {
+      alt: "Sorteio de Amigo Secreto",
+      url: "/opengraph-image.png",
+      type: "image/png",
+      width: 630,
+      height: 1200,
+      host: "https://amigo-secreto-sigma-six.vercel.app",
+      origin: "https://amigo-secreto-sigma-six.vercel.app",
+    },
+    title: "Sorteio de Amigo Secreto",
+    type: "website",
+    description: "Gerador de sorteio de amigo secreto",
+    countryName: "Brazil",
+    alternateLocale: "pt-BR",
+    emails: ["je_2742@hotmail.com"],
+    locale: "pt_BR",
+    phoneNumbers: ["+55 17 99130 5254"],
+    siteName: "Sorteio de Amigo Secreto",
+    url: "https://amigo-secreto-sigma-six.vercel.app",
+  },
+  twitter: {
+    images: {
+      alt: "Gerador de sorteio de amigo secreto",
+      url: "/twitter-image.png",
+      type: "image/png",
+      width: 675,
+      height: 1200,
+      host: "https://amigo-secreto-sigma-six.vercel.app",
+      origin: "https://amigo-secreto-sigma-six.vercel.app",
+    },
+    title: "Sorteio de Amigo Secreto",
+    card: "summary_large_image",
+    description:
+      "Gerador de sorteio de amigo secreto. Sorteie o seu amigo secreto de forma rápida e fácil.",
+    creator: "@_jeferson___",
+    site: "https://amigo-secreto-sigma-six.vercel.app",
+  },
   bookmarks: ["Sorteio de Amigo Secreto"],
   generator: "Sorteio de Amigo Secreto",
   category: "Sorteio de Amigo Secreto",
   // trocar para o domínio do site
   metadataBase: new URL("https://amigo-secreto-sigma-six.vercel.app"),
-  twitter: {
-    site: "@_jeferson___",
-    creator: "@_jeferson___",
-  },
   icons: ["🎁"],
 };
 
