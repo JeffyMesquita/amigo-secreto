@@ -311,8 +311,8 @@ export function Form() {
                     className="space-y-4"
                   >
                     <div className="flex flex-col sm:flex-row gap-4 items-start">
-                      <div className="flex-1 w-full bg-purple-50 rounded-md overflow-hidden">
-                        <div className="relative ">
+                      <div className="flex-1 w-full  rounded-md overflow-hidden">
+                        <div className="relative bg-purple-50">
                           <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -328,13 +328,13 @@ export function Form() {
                           </Tooltip>
                         </div>
                         {errors.participants?.[index]?.name && (
-                          <p className="text-red-500 text-sm mt-1 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
+                          <p className="text-red-500 text-sm mt-1">
                             {errors.participants[index]?.name?.message}
                           </p>
                         )}
                       </div>
-                      <div className="flex-1 w-full bg-purple-50  rounded-md overflow-hidden">
-                        <div className="relative">
+                      <div className="flex-1 w-full  rounded-md overflow-hidden">
+                        <div className="relative bg-purple-50">
                           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -361,7 +361,7 @@ export function Form() {
                           </Tooltip>
                         </div>
                         {errors.participants?.[index]?.whatsapp && (
-                          <p className="text-red-500 text-sm mt-1 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900">
+                          <p className="text-red-500 text-sm mt-1">
                             {errors.participants[index]?.whatsapp?.message}
                           </p>
                         )}
