@@ -266,7 +266,6 @@ export function Form() {
       <Toaster
         position="top-center"
         toastOptions={{
-          duration: 5000,
           style: {
             fontFamily: "'Metropolis', sans-serif",
           },
