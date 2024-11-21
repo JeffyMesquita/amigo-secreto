@@ -73,7 +73,7 @@ const participantSchema = z.object({
   whatsapp: z
     .string()
     .regex(
-      /^$$\d{2}$$ (?:\d{4}|\d{5})-\d{4}$/,
+      /^(\(\d{2}\)\s)?\d{4,5}-\d{4}$/,
       "Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX"
     ),
 });
@@ -284,7 +284,7 @@ export function Form() {
                     <Input
                       id="title"
                       {...register("title")}
-                      className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                      className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
                       placeholder="Ex: Amigo Secreto da Família"
                     />
                   </TooltipTrigger>
@@ -320,7 +320,7 @@ export function Form() {
                             <TooltipTrigger asChild>
                               <Input
                                 {...register(`participants.${index}.name`)}
-                                className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                                className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
                                 placeholder="Nome/Apelido"
                               />
                             </TooltipTrigger>
@@ -346,7 +346,7 @@ export function Form() {
                                 render={({ field }) => (
                                   <Input
                                     {...field}
-                                    className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500"
+                                    className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
                                     placeholder="(XX) XXXXX-XXXX"
                                     onChange={(e) =>
                                       field.onChange(
