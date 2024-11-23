@@ -33,7 +33,6 @@ import {
   Loader2,
   Minus,
   Moon,
-  Phone,
   Plus,
   Save,
   ShareIcon,
@@ -503,7 +502,7 @@ ${window.location.href}
                             </div>
                             <div className="flex-1 w-full  rounded-md overflow-hidden">
                               <div className="relative bg-purple-50">
-                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                                <FaWhatsapp className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500 size-6" />
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Controller
