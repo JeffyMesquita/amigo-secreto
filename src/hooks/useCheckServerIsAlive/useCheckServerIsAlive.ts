@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
 type ServerResponse = {
   status: number;
@@ -29,20 +29,20 @@ type Options = {
  */
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-const STATUS_KEY = "STATUS_KEY";
+const STATUS_KEY = 'STATUS_KEY';
 
 export function useCheckServerIsAlive(options?: Options) {
   return useQuery<ServerResponse, unknown>({
     queryKey: [STATUS_KEY],
     queryFn: async () => {
       const response = await fetch(`${BASE_URL}`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       if (!response.ok) {
-        throw new Error("Server is not alive");
+        throw new Error('Server is not alive');
       }
       return response.json();
     },

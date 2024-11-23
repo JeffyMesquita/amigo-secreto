@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 
 type Participant = {
   name: string;
@@ -29,22 +29,22 @@ async function sendWhatsAppMessage(to: string, message: string) {
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
     {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         apikey: EVOLUTION_API_KEY,
       },
       body: JSON.stringify({
         number: `55${to}`,
         options: {
           delay: 1200,
-          presence: "composing",
+          presence: 'composing',
           linkPreview: false,
         },
 
         text: message,
       }),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -55,7 +55,7 @@ async function sendWhatsAppMessage(to: string, message: string) {
 }
 
 export async function POST(request: Request) {
-  const ip = headers().get("x-forwarded-for") || "unknown";
+  const ip = headers().get('x-forwarded-for') || 'unknown';
   const now = Date.now();
 
   // Check rate limit
@@ -70,8 +70,8 @@ export async function POST(request: Request) {
 
   if (userRequests.count > MAX_REQUESTS_PER_HOUR) {
     return NextResponse.json(
-      { error: "Muitas requisições. Tente novamente mais tarde." },
-      { status: 429 }
+      { error: 'Muitas requisições. Tente novamente mais tarde.' },
+      { status: 429 },
     );
   }
 
@@ -79,8 +79,8 @@ export async function POST(request: Request) {
 
   if (body.participants.length < 3) {
     return NextResponse.json(
-      { error: "É necessário pelo menos 3 participantes" },
-      { status: 400 }
+      { error: 'É necessário pelo menos 3 participantes' },
+      { status: 400 },
     );
   }
 
@@ -115,7 +115,7 @@ Boa sorte e feliz Amigo Secreto! 🍀🎊`;
       await sendWhatsAppMessage(match.giver.whatsapp, message);
       console.log(message);
       console.log(
-        `Mensagem enviada para ${match.giver.name} (${match.giver.whatsapp})`
+        `Mensagem enviada para ${match.giver.name} (${match.giver.whatsapp})`,
       );
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
@@ -125,6 +125,6 @@ Boa sorte e feliz Amigo Secreto! 🍀🎊`;
 
   return NextResponse.json({
     success: true,
-    message: "Sorteio realizado e mensagens enviadas com sucesso",
+    message: 'Sorteio realizado e mensagens enviadas com sucesso',
   });
 }

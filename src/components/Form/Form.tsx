@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   AlertDialog,
@@ -9,21 +9,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useCheckServerIsAlive } from "@/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import confetti from "canvas-confetti";
-import { AnimatePresence, motion } from "framer-motion";
+} from '@/components/ui/tooltip';
+import { useCheckServerIsAlive } from '@/hooks';
+import { zodResolver } from '@hookform/resolvers/zod';
+import confetti from 'canvas-confetti';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ClipboardCheckIcon,
   Gift,
@@ -39,14 +39,14 @@ import {
   ShareIcon,
   Sun,
   Users,
-} from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { FaRegCopy, FaWhatsapp } from "react-icons/fa";
-import * as z from "zod";
-import { Timer } from "../Timer";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { FaRegCopy, FaWhatsapp } from 'react-icons/fa';
+import * as z from 'zod';
+import { Timer } from '../Timer';
 
 const animatedGradient = `
   @keyframes gradientAnimation {
@@ -63,27 +63,27 @@ const animatedGradient = `
 `;
 
 const participantSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(20),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(20),
   whatsapp: z
     .string()
     .regex(
       /^(\(\d{2}\)\s)?\d{4,5}-\d{4}$/,
-      "Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX"
+      'Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX',
     )
-    .min(10, "Número de telefone inválido"),
+    .min(10, 'Número de telefone inválido'),
 });
 
 const formSchema = z.object({
-  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres").max(50),
+  title: z.string().min(3, 'Título deve ter pelo menos 3 caracteres').max(50),
   participants: z
     .array(participantSchema)
-    .min(3, "É necessário pelo menos 3 participantes"),
+    .min(3, 'É necessário pelo menos 3 participantes'),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-const STORAGE_KEY = "amigo-secreto-draft";
-const STORAGE_THEME = "amigo-secreto-theme";
+const STORAGE_KEY = 'amigo-secreto-draft';
+const STORAGE_THEME = 'amigo-secreto-theme';
 const PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY!;
 
 function formatParticipants(data: FormData): FormData {
@@ -91,7 +91,7 @@ function formatParticipants(data: FormData): FormData {
     ...data,
     participants: data.participants.map((participant) => ({
       ...participant,
-      whatsapp: participant.whatsapp.replace(/\D/g, ""), // Remove qualquer caractere não numérico
+      whatsapp: participant.whatsapp.replace(/\D/g, ''), // Remove qualquer caractere não numérico
     })),
   };
 }
@@ -100,14 +100,14 @@ export function Form() {
   const [isStarted, setIsStarted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [participantToRemove, setParticipantToRemove] = useState<number | null>(
-    null
+    null,
   );
   const [showDraftSaved, setShowDraftSaved] = useState(false);
 
-  const checkServer = useCheckServerIsAlive({
+  useCheckServerIsAlive({
     started: isStarted,
   });
 
@@ -121,18 +121,18 @@ export function Form() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      title: '',
       participants: [
-        { name: "", whatsapp: "" },
-        { name: "", whatsapp: "" },
-        { name: "", whatsapp: "" },
+        { name: '', whatsapp: '' },
+        { name: '', whatsapp: '' },
+        { name: '', whatsapp: '' },
       ],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "participants",
+    name: 'participants',
   });
 
   // Watch form changes for auto-save
@@ -146,26 +146,26 @@ export function Form() {
             key={t.id}
             className={`${
               isDarkMode
-                ? "bg-purple-900"
-                : "bg-gradient-to-r from-purple-500 to-pink-500"
-            } text-white p-4 rounded-md shadow-lg`}
+                ? 'bg-purple-900'
+                : 'bg-gradient-to-r from-purple-500 to-pink-500'
+            } rounded-md p-4 text-white shadow-lg`}
           >
             <div className="flex justify-between">
               <p className="font-semibold">Chave PIX copiada!</p>
               <ClipboardCheckIcon className="h-5 w-5" />
             </div>
-            <p className="text-sm mt-2">Cole no seu aplicativo preferido.</p>
+            <p className="mt-2 text-sm">Cole no seu aplicativo preferido.</p>
           </div>
         ),
         {
           duration: 2000,
-        }
+        },
       );
     });
   };
 
   const handleShareWhatsApp = () => {
-    const baseURL = "https://wa.me/?text=";
+    const baseURL = 'https://wa.me/?text=';
     const message = `🎉✨ Ei, você aí! 🙋‍♂️🙋‍♀️
 
     
@@ -187,29 +187,29 @@ ${window.location.href}
 🎭 Vamos lá, surpreenda seus amigos e faça deste Amigo Secreto o melhor de todos! 🌟🎊`;
 
     // Usa encodeURIComponent apenas nos caracteres essenciais
-    const encodedMessage = message.replace(/\n/g, "%0A");
+    const encodedMessage = message.replace(/\n/g, '%0A');
 
     // Monta o link final
     const finalURL = `${baseURL}${encodedMessage}`;
 
     // Abre o WhatsApp com o link gerado
-    window.open(finalURL, "_blank");
+    window.open(finalURL, '_blank');
   };
 
   const handleShareGeneral = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Amigo Secreto",
-          text: "Venha participar do nosso Amigo Secreto!",
+          title: 'Amigo Secreto',
+          text: 'Venha participar do nosso Amigo Secreto!',
           url: window.location.href,
         });
       } catch (error) {
-        console.error("Error sharing:", error);
+        console.error('Error sharing:', error);
       }
     } else {
       toast.error(
-        "Seu navegador não suporta a funcionalidade de compartilhamento."
+        'Seu navegador não suporta a funcionalidade de compartilhamento.',
       );
     }
   };
@@ -223,29 +223,29 @@ ${window.location.href}
           key={t.id}
           className={`${
             isDarkMode
-              ? "bg-purple-900"
-              : "bg-gradient-to-r from-purple-500 to-pink-500"
-          } text-white p-4 rounded-md shadow-lg`}
+              ? 'bg-purple-900'
+              : 'bg-gradient-to-r from-purple-500 to-pink-500'
+          } rounded-md p-4 text-white shadow-lg`}
         >
           <div className="flex items-center justify-between">
             <p className="font-semibold">Gerando Amigo Secreto...</p>
             <Loader2 className="h-4 w-4 animate-spin" />
           </div>
-          <p className="text-sm mt-2">Aguarde enquanto geramos o sorteio.</p>
+          <p className="mt-2 text-sm">Aguarde enquanto geramos o sorteio.</p>
         </div>
       ),
       {
         duration: 10000,
-      }
+      },
     );
 
     setIsSubmitting(true);
-    setErrorMessage("");
+    setErrorMessage('');
     try {
-      const response = await fetch("/api/sorteio", {
-        method: "POST",
+      const response = await fetch('/api/sorteio', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formattedData),
       });
@@ -256,13 +256,13 @@ ${window.location.href}
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 5000);
       } else {
-        throw new Error(result.error || "Falha ao gerar o Amigo Secreto");
+        throw new Error(result.error || 'Falha ao gerar o Amigo Secreto');
       }
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Erro ao gerar o Amigo Secreto. Por favor, tente novamente."
+          : 'Erro ao gerar o Amigo Secreto. Por favor, tente novamente.',
       );
     } finally {
       setIsSubmitting(false);
@@ -271,11 +271,11 @@ ${window.location.href}
   };
 
   const formatWhatsApp = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
+    const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 10) {
-      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     }
-    return numbers.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
 
   const handleRemoveParticipant = (index: number) => {
@@ -290,7 +290,7 @@ ${window.location.href}
   };
 
   useEffect(() => {
-    const style = document.createElement("style");
+    const style = document.createElement('style');
     style.textContent = animatedGradient;
     document.head.appendChild(style);
     return () => {
@@ -305,7 +305,7 @@ ${window.location.href}
         const parsedDraft = JSON.parse(savedDraft);
         reset(parsedDraft);
       } catch (error) {
-        console.error("Error loading draft:", error);
+        console.error('Error loading draft:', error);
       }
     }
   }, [reset]);
@@ -324,17 +324,17 @@ ${window.location.href}
   // Dark mode
   useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem(STORAGE_THEME, "true");
+      document.documentElement.classList.add('dark');
+      localStorage.setItem(STORAGE_THEME, 'true');
     } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem(STORAGE_THEME, "false");
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem(STORAGE_THEME, 'false');
     }
   }, [isDarkMode]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_THEME);
-    if (savedTheme === "true") {
+    if (savedTheme === 'true') {
       setIsDarkMode(true);
     } else {
       setIsDarkMode(false);
@@ -356,9 +356,9 @@ ${window.location.href}
       <Timer startCheck={isStarted} setStartCheck={setIsStarted} />
 
       <TooltipProvider>
-        <div className="min-h-screen flex flex-col">
-          <header className="w-full bg-gradient-to-r from-purple-500 to-pink-500 p-4 rounded-b-lg shadow-lg">
-            <div className="max-w-4xl mx-auto flex justify-between items-center">
+        <div className="flex min-h-screen flex-col">
+          <header className="w-full rounded-b-lg bg-gradient-to-r from-purple-500 to-pink-500 p-4 shadow-lg">
+            <div className="mx-auto flex max-w-4xl items-center justify-between">
               <div>
                 <Button
                   title="Compartilhar no WhatsApp"
@@ -390,24 +390,24 @@ ${window.location.href}
           </header>
 
           <main className="flex-grow py-8">
-            <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 shadow-lg">
+            <Card className="mx-auto w-full max-w-2xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-lg dark:from-purple-900 dark:to-pink-900">
               <CardHeader className="space-y-1">
-                <div className="flex justify-end items-center">
+                <div className="flex items-center justify-end">
                   <Button
                     title={
                       isDarkMode
-                        ? "Desativar modo escuro"
-                        : "Ativar modo escuro"
+                        ? 'Desativar modo escuro'
+                        : 'Ativar modo escuro'
                     }
                     aria-label={
                       isDarkMode
-                        ? "Desativar modo escuro"
-                        : "Ativar modo escuro"
+                        ? 'Desativar modo escuro'
+                        : 'Ativar modo escuro'
                     }
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsDarkMode(!isDarkMode)}
-                    className="rounded-full flex-shrink-0 hover:bg-purple-100 hover:text-purple-500 dark:hover:bg-pink-100 dark:hover:text-pink-500"
+                    className="flex-shrink-0 rounded-full hover:bg-purple-100 hover:text-purple-500 dark:hover:bg-pink-100 dark:hover:text-pink-500"
                   >
                     {isDarkMode ? (
                       <Sun className="h-5 w-5" />
@@ -416,13 +416,13 @@ ${window.location.href}
                     )}
                   </Button>
                 </div>
-                <CardTitle className="text-2xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+                <CardTitle className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-center text-2xl font-bold text-transparent sm:text-4xl">
                   Sorteador de Amigo Secreto
                 </CardTitle>
-                <p className="text-center text-muted-foreground font-semibold">
+                <p className="text-center font-semibold text-muted-foreground">
                   Crie seu sorteio de forma fácil e divertida!
                 </p>
-                <div className="text-sm text-center text-muted-foreground font-semibold">
+                <div className="text-center text-sm font-semibold text-muted-foreground">
                   Total de participantes: {fields.length}
                 </div>
               </CardHeader>
@@ -434,21 +434,21 @@ ${window.location.href}
                     transition={{
                       duration: 0.5,
                       delay: 0.5,
-                      type: "spring",
+                      type: 'spring',
                       stiffness: 100,
                     }}
                   >
                     <Label htmlFor="title" className="font-semibold">
                       Título do Amigo Secreto
                     </Label>
-                    <div className="relative bg-purple-50  rounded-md overflow-hidden">
-                      <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                    <div className="relative overflow-hidden rounded-md bg-purple-50">
+                      <Gift className="absolute left-3 top-1/2 -translate-y-1/2 transform text-purple-500" />
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Input
                             id="title"
-                            {...register("title")}
-                            className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
+                            {...register('title')}
+                            className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
                             placeholder="Ex: Amigo Secreto da Família"
                             maxLength={50}
                           />
@@ -459,7 +459,7 @@ ${window.location.href}
                       </Tooltip>
                     </div>
                     {errors.title && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="mt-1 text-sm text-red-500">
                         {errors.title.message}
                       </p>
                     )}
@@ -478,17 +478,17 @@ ${window.location.href}
                           transition={{ duration: 0.5, delay: 0.5 }}
                           className="space-y-4"
                         >
-                          <div className="flex flex-col sm:flex-row gap-4 items-start">
-                            <div className="flex-1 w-full  rounded-md overflow-hidden">
+                          <div className="flex flex-col items-start gap-4 sm:flex-row">
+                            <div className="w-full flex-1 overflow-hidden rounded-md">
                               <div className="relative bg-purple-50">
-                                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500" />
+                                <Users className="absolute left-3 top-1/2 -translate-y-1/2 transform text-purple-500" />
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Input
                                       {...register(
-                                        `participants.${index}.name`
+                                        `participants.${index}.name`,
                                       )}
-                                      className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
+                                      className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
                                       placeholder="Nome/Apelido"
                                       maxLength={20}
                                     />
@@ -501,14 +501,14 @@ ${window.location.href}
                                 </Tooltip>
                               </div>
                               {errors.participants?.[index]?.name && (
-                                <p className="text-red-500 text-sm mt-1">
+                                <p className="mt-1 text-sm text-red-500">
                                   {errors.participants[index]?.name?.message}
                                 </p>
                               )}
                             </div>
-                            <div className="flex-1 w-full  rounded-md overflow-hidden">
+                            <div className="w-full flex-1 overflow-hidden rounded-md">
                               <div className="relative bg-purple-50">
-                                <FaWhatsapp className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500 size-6" />
+                                <FaWhatsapp className="absolute left-3 top-1/2 size-6 -translate-y-1/2 transform text-purple-500" />
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Controller
@@ -517,12 +517,12 @@ ${window.location.href}
                                       render={({ field }) => (
                                         <Input
                                           {...field}
-                                          className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
+                                          className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
                                           maxLength={15}
                                           placeholder="(XX) XXXXX-XXXX"
                                           onChange={(e) =>
                                             field.onChange(
-                                              formatWhatsApp(e.target.value)
+                                              formatWhatsApp(e.target.value),
                                             )
                                           }
                                         />
@@ -535,7 +535,7 @@ ${window.location.href}
                                 </Tooltip>
                               </div>
                               {errors.participants?.[index]?.whatsapp && (
-                                <p className="text-red-500 text-sm mt-1">
+                                <p className="mt-1 text-sm text-red-500">
                                   {
                                     errors.participants[index]?.whatsapp
                                       ?.message
@@ -551,14 +551,14 @@ ${window.location.href}
                                 variant="outline"
                                 size="icon"
                                 onClick={() => handleRemoveParticipant(index)}
-                                className="bg-red-100 hover:bg-red-200 text-red-500 self-center sm:self-start mt-2 sm:mt-0"
+                                className="mt-2 self-center bg-red-100 text-red-500 hover:bg-red-200 sm:mt-0 sm:self-start"
                               >
                                 <Minus className="h-4 w-4" />
                               </Button>
                             )}
                           </div>
                           {index < fields.length - 1 && (
-                            <div className="my-6 h-[2px] animated-gradient" />
+                            <div className="animated-gradient my-6 h-[2px]" />
                           )}
                         </motion.div>
                       ))}
@@ -569,10 +569,10 @@ ${window.location.href}
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => append({ name: "", whatsapp: "" })}
-                      className="mt-2 bg-green-100 hover:bg-green-200 text-green-600 dark:bg-green-900 dark:hover:bg-green-800 dark:text-green-200"
+                      onClick={() => append({ name: '', whatsapp: '' })}
+                      className="mt-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
-                      <Plus className="h-4 w-4 mr-2" /> Adicionar Participante
+                      <Plus className="mr-2 h-4 w-4" /> Adicionar Participante
                     </Button>
                   </div>
                   <motion.div
@@ -583,7 +583,7 @@ ${window.location.href}
                       title="Gerar Amigo Secreto"
                       aria-label="Gerar Amigo Secreto"
                       type="submit"
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -592,7 +592,7 @@ ${window.location.href}
                           Gerando Amigo Secreto...
                         </>
                       ) : (
-                        "Gerar Amigo Secreto"
+                        'Gerar Amigo Secreto'
                       )}
                     </Button>
                   </motion.div>
@@ -603,7 +603,7 @@ ${window.location.href}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="mt-4 p-4 bg-green-200 text-green-700 rounded-md text-center font-semibold dark:bg-green-700 dark:text-green-200"
+                      className="mt-4 rounded-md bg-green-200 p-4 text-center font-semibold text-green-700 dark:bg-green-700 dark:text-green-200"
                     >
                       Amigo Secreto gerado com sucesso! Os participantes foram
                       notificados.
@@ -614,7 +614,7 @@ ${window.location.href}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="mt-4 p-4 bg-red-200 text-red-700 rounded-md text-center font-semibold dark:bg-red-700 dark:text-red-200"
+                      className="mt-4 rounded-md bg-red-200 p-4 text-center font-semibold text-red-700 dark:bg-red-700 dark:text-red-200"
                     >
                       {errorMessage}
                     </motion.div>
@@ -635,9 +635,9 @@ ${window.location.href}
             </Card>
           </main>
 
-          <footer className="w-full bg-gradient-to-r from-purple-500 to-pink-500 p-4 mt-8 rounded-t-lg shadow-lg">
-            <div className="max-w-4xl mx-auto flex flex-col items-center space-y-2">
-              <div className="flex justify-center items-center space-x-4">
+          <footer className="mt-8 w-full rounded-t-lg bg-gradient-to-r from-purple-500 to-pink-500 p-4 shadow-lg">
+            <div className="mx-auto flex max-w-4xl flex-col items-center space-y-2">
+              <div className="flex items-center justify-center space-x-4">
                 <Link
                   href="https://github.com/JeffyMesquita"
                   target="_blank"
@@ -675,7 +675,7 @@ ${window.location.href}
                   <InstagramIcon className="h-6 w-6 text-white" />
                 </Link>
               </div>
-              <div className="text-white text-sm">
+              <div className="text-sm text-white">
                 &copy; {new Date().getFullYear()} JeffyMesquita. Todos os
                 direitos reservados.
               </div>

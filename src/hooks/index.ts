@@ -1,1 +1,1 @@
-export { useCheckServerIsAlive } from "./useCheckServerIsAlive";
+export { useCheckServerIsAlive } from './useCheckServerIsAlive';

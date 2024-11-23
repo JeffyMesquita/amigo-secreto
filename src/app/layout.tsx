@@ -1,106 +1,106 @@
-import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next";
-import localFont from "next/font/local";
-import "./globals.css";
-import { Providers } from "./Providers";
+import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
+import localFont from 'next/font/local';
+import './globals.css';
+import { Providers } from './Providers';
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+  src: './fonts/GeistVF.woff',
+  variable: '--font-geist-sans',
+  weight: '100 900',
 });
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+  src: './fonts/GeistMonoVF.woff',
+  variable: '--font-geist-mono',
+  weight: '100 900',
 });
 
 export const metadata: Metadata = {
-  title: "Sorteio de Amigo Secreto",
-  description: "Gerador de sorteio de amigo secreto",
-  abstract: "Gerador de sorteio de amigo secreto",
+  title: 'Sorteio de Amigo Secreto',
+  description: 'Gerador de sorteio de amigo secreto',
+  abstract: 'Gerador de sorteio de amigo secreto',
   keywords: [
-    "sorteio",
-    "amigo secreto",
-    "gerador",
-    "sorteio de amigo secreto",
-    "amigo oculto",
-    "natal",
-    "fim de ano",
-    "amigo secreto online",
-    "sorteio online",
-    "sorteio de amigo secreto online",
-    "amigo secreto virtual",
-    "sorteio virtual",
-    " sorteio de amigo secreto virtual",
-    "amigo secreto online gratis",
-    "sorteio online gratis",
-    "sorteio de amigo secreto online",
-    "amigo secreto virtual gratis",
+    'sorteio',
+    'amigo secreto',
+    'gerador',
+    'sorteio de amigo secreto',
+    'amigo oculto',
+    'natal',
+    'fim de ano',
+    'amigo secreto online',
+    'sorteio online',
+    'sorteio de amigo secreto online',
+    'amigo secreto virtual',
+    'sorteio virtual',
+    ' sorteio de amigo secreto virtual',
+    'amigo secreto online gratis',
+    'sorteio online gratis',
+    'sorteio de amigo secreto online',
+    'amigo secreto virtual gratis',
   ],
   appleWebApp: true,
-  applicationName: "Sorteio de Amigo Secreto",
+  applicationName: 'Sorteio de Amigo Secreto',
   authors: [
     {
-      name: "Jeferson Antonio Mesquita",
-      url: "https://github.com/JeffyMesquita",
+      name: 'Jeferson Antonio Mesquita',
+      url: 'https://github.com/JeffyMesquita',
     },
   ],
-  creator: "Jeferson Antonio Mesquita",
+  creator: 'Jeferson Antonio Mesquita',
   alternates: {
-    canonical: "/",
+    canonical: '/',
   },
   openGraph: {
     images: {
-      alt: "Sorteio de Amigo Secreto",
-      url: "/opengraph-image.png",
-      type: "image/png",
+      alt: 'Sorteio de Amigo Secreto',
+      url: '/opengraph-image.png',
+      type: 'image/png',
       width: 630,
       height: 1200,
-      host: "https://amigosecreto.jeffymesquita.dev",
-      origin: "https://amigosecreto.jeffymesquita.dev",
+      host: 'https://amigosecreto.jeffymesquita.dev',
+      origin: 'https://amigosecreto.jeffymesquita.dev',
     },
-    title: "Sorteio de Amigo Secreto",
-    type: "website",
-    description: "Gerador de sorteio de amigo secreto",
-    countryName: "Brazil",
-    alternateLocale: "pt-BR",
-    emails: ["je_2742@hotmail.com"],
-    locale: "pt_BR",
-    phoneNumbers: ["+55 17 99130 5254"],
-    siteName: "Sorteio de Amigo Secreto",
-    url: "https://amigosecreto.jeffymesquita.dev",
+    title: 'Sorteio de Amigo Secreto',
+    type: 'website',
+    description: 'Gerador de sorteio de amigo secreto',
+    countryName: 'Brazil',
+    alternateLocale: 'pt-BR',
+    emails: ['je_2742@hotmail.com'],
+    locale: 'pt_BR',
+    phoneNumbers: ['+55 17 99130 5254'],
+    siteName: 'Sorteio de Amigo Secreto',
+    url: 'https://amigosecreto.jeffymesquita.dev',
   },
   twitter: {
     images: {
-      alt: "Gerador de sorteio de amigo secreto",
-      url: "/twitter-image.png",
-      type: "image/png",
+      alt: 'Gerador de sorteio de amigo secreto',
+      url: '/twitter-image.png',
+      type: 'image/png',
       width: 675,
       height: 1200,
-      host: "https://amigosecreto.jeffymesquita.dev",
-      origin: "https://amigosecreto.jeffymesquita.dev",
+      host: 'https://amigosecreto.jeffymesquita.dev',
+      origin: 'https://amigosecreto.jeffymesquita.dev',
     },
-    title: "Sorteio de Amigo Secreto",
-    card: "summary_large_image",
+    title: 'Sorteio de Amigo Secreto',
+    card: 'summary_large_image',
     description:
-      "Gerador de sorteio de amigo secreto. Sorteie o seu amigo secreto de forma rápida e fácil.",
-    creator: "@_jeferson___",
-    site: "https://amigosecreto.jeffymesquita.dev",
+      'Gerador de sorteio de amigo secreto. Sorteie o seu amigo secreto de forma rápida e fácil.',
+    creator: '@_jeferson___',
+    site: 'https://amigosecreto.jeffymesquita.dev',
   },
-  bookmarks: ["Sorteio de Amigo Secreto"],
-  generator: "Sorteio de Amigo Secreto",
-  category: "Sorteio de Amigo Secreto",
+  bookmarks: ['Sorteio de Amigo Secreto'],
+  generator: 'Sorteio de Amigo Secreto',
+  category: 'Sorteio de Amigo Secreto',
   // trocar para o domínio do site
-  metadataBase: new URL("https://amigosecreto.jeffymesquita.dev"),
-  icons: ["🎁"],
+  metadataBase: new URL('https://amigosecreto.jeffymesquita.dev'),
+  icons: ['🎁'],
 };
 
 async function checkServerIsAlive() {
   const response = await fetch(`${process.env.EVOLUTION_API_URL}`, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   return response.ok;
@@ -129,7 +129,7 @@ export default async function RootLayout({
         ></script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen justify-center items-center bg-zinc-100 dark:bg-zinc-900`}
+        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col items-center justify-center bg-zinc-100 antialiased dark:bg-zinc-900`}
       >
         <Providers>{children}</Providers>
         <Analytics />
