@@ -33,80 +33,21 @@
     "import",
     "unused-imports"
   ],
+  "reportUnusedDisableDirectives": true,
   "rules": {
-    // Regras gerais
-    "prettier/prettier": "error",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_" }
-    ],
-    "no-console": "warn",
-    "react/react-in-jsx-scope": "off",
-
-    // Regras para TypeScript
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/consistent-type-imports": "warn",
-    "@typescript-eslint/no-floating-promises": "error",
-
-    // Importações
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin", // Módulos nativos (e.g., fs, path)
-          "external", // Pacotes externos (e.g., react, lodash)
-          "internal", // Importações internas do projeto
-          ["parent", "sibling", "index"], // Relativas (e.g., ../file, ./file)
-          "type" // Importações de tipo separadas
-        ],
-        "pathGroups": [
-          {
-            "pattern": "react",
-            "group": "external",
-            "position": "before"
-          }
-        ],
-        "pathGroupsExcludedImportTypes": ["react"],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ],
-    "import/newline-after-import": "error",
-    "import/no-unused-modules": "warn",
-    "unused-imports/no-unused-imports": "error",
-    "unused-imports/no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "varsIgnorePattern": "^_",
-        "args": "after-used",
-        "argsIgnorePattern": "^_"
-      }
-    ],
-
-    // React
-    "react/prop-types": "off",
-    "react/jsx-sort-props": [
-      "error",
-      {
-        "callbacksLast": true,
-        "shorthandFirst": true,
-        "multiline": "ignore",
-        "reservedFirst": true
-      }
-    ]
+    "no-warning-comments": "warn",
+    // Desativando regras específicas
+    "@typescript-eslint/no-misused-promises": "off", // Desativa a regra de promessa mal usada em atributos
+    "@typescript-eslint/no-floating-promises": "off", // Desativa a regra de promessas não aguardadas
+    "@typescript-eslint/no-unsafe-assignment": "off", // Desativa a regra de atribuição insegura
+    "@typescript-eslint/no-unsafe-argument": "off" // Desativa a regra de argumento inseguro
   },
   "settings": {
     "react": {
       "version": "detect"
     },
     "import/resolver": {
-      "typescript": {} // Suporte a alias configurados no tsconfig.json
+      "typescript": {}
     }
   }
 }

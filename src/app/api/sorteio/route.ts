@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
