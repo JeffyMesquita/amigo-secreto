@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useCheckServerIsAlive } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
@@ -42,11 +43,10 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { FaRegCopy, FaWhatsapp } from "react-icons/fa";
 import * as z from "zod";
 import { Timer } from "../Timer";
-import { useCheckServerIsAlive } from "@/hooks";
 
 const animatedGradient = `
   @keyframes gradientAnimation {
@@ -110,8 +110,6 @@ export function Form() {
   const checkServer = useCheckServerIsAlive({
     started: isStarted,
   });
-
-  console.log(checkServer.data);
 
   const {
     register,
