@@ -94,11 +94,24 @@ export const metadata: Metadata = {
   icons: ["🎁"],
 };
 
-export default function RootLayout({
+async function checkServerIsAlive() {
+  const response = await fetch(`${process.env.EVOLUTION_API_URL}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.ok;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isServerAlive = await checkServerIsAlive();
+  console.log(isServerAlive);
+
   return (
     <html lang="pt-BR">
       <head>
