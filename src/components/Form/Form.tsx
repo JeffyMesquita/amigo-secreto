@@ -62,17 +62,18 @@ const animatedGradient = `
 `;
 
 const participantSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres").max(20),
   whatsapp: z
     .string()
     .regex(
       /^(\(\d{2}\)\s)?\d{4,5}-\d{4}$/,
       "Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX"
-    ),
+    )
+    .min(10, "Número de telefone inválido"),
 });
 
 const formSchema = z.object({
-  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
+  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres").max(50),
   participants: z
     .array(participantSchema)
     .min(3, "É necessário pelo menos 3 participantes"),
