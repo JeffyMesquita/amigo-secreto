@@ -444,6 +444,7 @@ ${window.location.href}
                             {...register("title")}
                             className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
                             placeholder="Ex: Amigo Secreto da Família"
+                            maxLength={50}
                           />
                         </TooltipTrigger>
                         <TooltipContent>
@@ -483,6 +484,7 @@ ${window.location.href}
                                       )}
                                       className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
                                       placeholder="Nome/Apelido"
+                                      maxLength={20}
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -510,6 +512,7 @@ ${window.location.href}
                                         <Input
                                           {...field}
                                           className="pl-10 border-purple-300 focus:border-pink-500 focus:ring-pink-500 text-zinc-900 dark:text-zinc-900 font-semibold"
+                                          maxLength={15}
                                           placeholder="(XX) XXXXX-XXXX"
                                           onChange={(e) =>
                                             field.onChange(
