@@ -45,6 +45,8 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { FaRegCopy, FaWhatsapp } from "react-icons/fa";
 import * as z from "zod";
+import { Timer } from "../Timer";
+import { useCheckServerIsAlive } from "@/hooks";
 
 const animatedGradient = `
   @keyframes gradientAnimation {
@@ -95,6 +97,7 @@ function formatParticipants(data: FormData): FormData {
 }
 
 export function Form() {
+  const [isStarted, setIsStarted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -103,6 +106,12 @@ export function Form() {
     null
   );
   const [showDraftSaved, setShowDraftSaved] = useState(false);
+
+  const checkServer = useCheckServerIsAlive({
+    started: isStarted,
+  });
+
+  console.log(checkServer.data);
 
   const {
     register,
@@ -346,14 +355,8 @@ ${window.location.href}
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            fontFamily: "'Metropolis', sans-serif",
-          },
-        }}
-      />
+      <Timer startCheck={isStarted} setStartCheck={setIsStarted} />
+
       <TooltipProvider>
         <div className="min-h-screen flex flex-col">
           <header className="w-full bg-gradient-to-r from-purple-500 to-pink-500 p-4 rounded-b-lg shadow-lg">
