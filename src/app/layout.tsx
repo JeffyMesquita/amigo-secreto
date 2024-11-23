@@ -57,8 +57,8 @@ export const metadata: Metadata = {
       type: "image/png",
       width: 630,
       height: 1200,
-      host: "https://amigo-secreto-sigma-six.vercel.app",
-      origin: "https://amigo-secreto-sigma-six.vercel.app",
+      host: "https://amigosecreto.jeffymesquita.dev",
+      origin: "https://amigosecreto.jeffymesquita.dev",
     },
     title: "Sorteio de Amigo Secreto",
     type: "website",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     phoneNumbers: ["+55 17 99130 5254"],
     siteName: "Sorteio de Amigo Secreto",
-    url: "https://amigo-secreto-sigma-six.vercel.app",
+    url: "https://amigosecreto.jeffymesquita.dev",
   },
   twitter: {
     images: {
@@ -78,21 +78,21 @@ export const metadata: Metadata = {
       type: "image/png",
       width: 675,
       height: 1200,
-      host: "https://amigo-secreto-sigma-six.vercel.app",
-      origin: "https://amigo-secreto-sigma-six.vercel.app",
+      host: "https://amigosecreto.jeffymesquita.dev",
+      origin: "https://amigosecreto.jeffymesquita.dev",
     },
     title: "Sorteio de Amigo Secreto",
     card: "summary_large_image",
     description:
       "Gerador de sorteio de amigo secreto. Sorteie o seu amigo secreto de forma rápida e fácil.",
     creator: "@_jeferson___",
-    site: "https://amigo-secreto-sigma-six.vercel.app",
+    site: "https://amigosecreto.jeffymesquita.dev",
   },
   bookmarks: ["Sorteio de Amigo Secreto"],
   generator: "Sorteio de Amigo Secreto",
   category: "Sorteio de Amigo Secreto",
   // trocar para o domínio do site
-  metadataBase: new URL("https://amigo-secreto-sigma-six.vercel.app"),
+  metadataBase: new URL("https://amigosecreto.jeffymesquita.dev"),
   icons: ["🎁"],
 };
 
