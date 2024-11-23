@@ -35,7 +35,12 @@ export function useCheckServerIsAlive(options?: Options) {
   return useQuery<ServerResponse, unknown>({
     queryKey: [STATUS_KEY],
     queryFn: async () => {
-      const response = await fetch(`${BASE_URL}`);
+      const response = await fetch(`${BASE_URL}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Server is not alive");
       }
@@ -44,8 +49,6 @@ export function useCheckServerIsAlive(options?: Options) {
     enabled: options?.started,
     retry: false,
     refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    refetchOnReconnect: true,
     refetchInterval: 1000 * 60 * 3, // 3 minutes
     onSuccess: options?.onSuccess,
     onError: options?.onError,
