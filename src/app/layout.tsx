@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+
 import { Analytics } from '@vercel/analytics/next';
 import localFont from 'next/font/local';
+
 import './globals.css';
 import { Providers } from './Providers';
 
@@ -119,13 +121,13 @@ export default async function RootLayout({
     <html lang="pt-BR">
       <head>
         <meta
-          name="google-adsense-account"
           content="ca-pub-6396092891104748"
+          name="google-adsense-account"
         ></meta>
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6396092891104748"
           crossOrigin="anonymous"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6396092891104748"
         ></script>
       </head>
       <body

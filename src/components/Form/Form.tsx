@@ -1,5 +1,32 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import confetti from 'canvas-confetti';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ClipboardCheckIcon,
+  Gift,
+  GithubIcon,
+  GlobeIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  Loader2,
+  Minus,
+  Moon,
+  Plus,
+  Save,
+  ShareIcon,
+  Sun,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { FaRegCopy, FaWhatsapp } from 'react-icons/fa';
+import * as z from 'zod';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,31 +48,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useCheckServerIsAlive } from '@/hooks';
-import { zodResolver } from '@hookform/resolvers/zod';
-import confetti from 'canvas-confetti';
-import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ClipboardCheckIcon,
-  Gift,
-  GithubIcon,
-  GlobeIcon,
-  InstagramIcon,
-  LinkedinIcon,
-  Loader2,
-  Minus,
-  Moon,
-  Plus,
-  Save,
-  ShareIcon,
-  Sun,
-  Users,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { FaRegCopy, FaWhatsapp } from 'react-icons/fa';
-import * as z from 'zod';
+
 import { Timer } from '../Timer';
 
 const animatedGradient = `
@@ -353,7 +356,7 @@ ${window.location.href}
 
   return (
     <>
-      <Timer startCheck={isStarted} setStartCheck={setIsStarted} />
+      <Timer setStartCheck={setIsStarted} startCheck={isStarted} />
 
       <TooltipProvider>
         <div className="flex min-h-screen flex-col">
@@ -361,17 +364,17 @@ ${window.location.href}
             <div className="mx-auto flex max-w-4xl items-center justify-between">
               <div>
                 <Button
-                  title="Compartilhar no WhatsApp"
                   aria-label="Compartilhar no WhatsApp"
-                  onClick={handleShareWhatsApp}
                   className="mr-2"
+                  title="Compartilhar no WhatsApp"
+                  onClick={handleShareWhatsApp}
                 >
                   <FaWhatsapp className="h-4 w-4" />
                   <span className="sr-only">Compartilhar no WhatsApp</span>
                 </Button>
                 <Button
-                  title="Compartilhar"
                   aria-label="Compartilhar"
+                  title="Compartilhar"
                   onClick={handleShareGeneral}
                 >
                   <ShareIcon className="h-4 w-4" />
@@ -394,20 +397,20 @@ ${window.location.href}
               <CardHeader className="space-y-1">
                 <div className="flex items-center justify-end">
                   <Button
-                    title={
-                      isDarkMode
-                        ? 'Desativar modo escuro'
-                        : 'Ativar modo escuro'
-                    }
                     aria-label={
                       isDarkMode
                         ? 'Desativar modo escuro'
                         : 'Ativar modo escuro'
                     }
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsDarkMode(!isDarkMode)}
                     className="flex-shrink-0 rounded-full hover:bg-purple-100 hover:text-purple-500 dark:hover:bg-pink-100 dark:hover:text-pink-500"
+                    size="icon"
+                    title={
+                      isDarkMode
+                        ? 'Desativar modo escuro'
+                        : 'Ativar modo escuro'
+                    }
+                    variant="ghost"
+                    onClick={() => setIsDarkMode(!isDarkMode)}
                   >
                     {isDarkMode ? (
                       <Sun className="h-5 w-5" />
@@ -427,10 +430,10 @@ ${window.location.href}
                 </div>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                   <motion.div
-                    initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: -20 }}
                     transition={{
                       duration: 0.5,
                       delay: 0.5,
@@ -438,7 +441,7 @@ ${window.location.href}
                       stiffness: 100,
                     }}
                   >
-                    <Label htmlFor="title" className="font-semibold">
+                    <Label className="font-semibold" htmlFor="title">
                       Título do Amigo Secreto
                     </Label>
                     <div className="relative overflow-hidden rounded-md bg-purple-50">
@@ -449,8 +452,8 @@ ${window.location.href}
                             id="title"
                             {...register('title')}
                             className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
-                            placeholder="Ex: Amigo Secreto da Família"
                             maxLength={50}
+                            placeholder="Ex: Amigo Secreto da Família"
                           />
                         </TooltipTrigger>
                         <TooltipContent>
@@ -472,11 +475,11 @@ ${window.location.href}
                       {fields.map((field, index) => (
                         <motion.div
                           key={field.id}
-                          initial={{ opacity: 0, x: -50 }}
                           animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 50 }}
-                          transition={{ duration: 0.5, delay: 0.5 }}
                           className="space-y-4"
+                          exit={{ opacity: 0, x: 50 }}
+                          initial={{ opacity: 0, x: -50 }}
+                          transition={{ duration: 0.5, delay: 0.5 }}
                         >
                           <div className="flex flex-col items-start gap-4 sm:flex-row">
                             <div className="w-full flex-1 overflow-hidden rounded-md">
@@ -489,8 +492,8 @@ ${window.location.href}
                                         `participants.${index}.name`,
                                       )}
                                       className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
-                                      placeholder="Nome/Apelido"
                                       maxLength={20}
+                                      placeholder="Nome/Apelido"
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -512,8 +515,8 @@ ${window.location.href}
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Controller
-                                      name={`participants.${index}.whatsapp`}
                                       control={control}
+                                      name={`participants.${index}.whatsapp`}
                                       render={({ field }) => (
                                         <Input
                                           {...field}
@@ -545,13 +548,13 @@ ${window.location.href}
                             </div>
                             {index > 2 && (
                               <Button
-                                title="Remover participante"
                                 aria-label="Remover participante"
+                                className="mt-2 self-center bg-red-100 text-red-500 hover:bg-red-200 sm:mt-0 sm:self-start"
+                                size="icon"
+                                title="Remover participante"
                                 type="button"
                                 variant="outline"
-                                size="icon"
                                 onClick={() => handleRemoveParticipant(index)}
-                                className="mt-2 self-center bg-red-100 text-red-500 hover:bg-red-200 sm:mt-0 sm:self-start"
                               >
                                 <Minus className="h-4 w-4" />
                               </Button>
@@ -564,13 +567,13 @@ ${window.location.href}
                       ))}
                     </AnimatePresence>
                     <Button
-                      title="Adicionar participante"
                       aria-label="Adicionar participante"
+                      className="mt-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
+                      size="sm"
+                      title="Adicionar participante"
                       type="button"
                       variant="outline"
-                      size="sm"
                       onClick={() => append({ name: '', whatsapp: '' })}
-                      className="mt-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Adicionar Participante
                     </Button>
@@ -580,11 +583,11 @@ ${window.location.href}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
-                      title="Gerar Amigo Secreto"
                       aria-label="Gerar Amigo Secreto"
-                      type="submit"
                       className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
                       disabled={isSubmitting}
+                      title="Gerar Amigo Secreto"
+                      type="submit"
                     >
                       {isSubmitting ? (
                         <>
@@ -600,10 +603,10 @@ ${window.location.href}
                 <AnimatePresence>
                   {showSuccess && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
                       className="mt-4 rounded-md bg-green-200 p-4 text-center font-semibold text-green-700 dark:bg-green-700 dark:text-green-200"
+                      exit={{ opacity: 0, y: -20 }}
+                      initial={{ opacity: 0, y: 20 }}
                     >
                       Amigo Secreto gerado com sucesso! Os participantes foram
                       notificados.
@@ -611,20 +614,20 @@ ${window.location.href}
                   )}
                   {errorMessage && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
                       className="mt-4 rounded-md bg-red-200 p-4 text-center font-semibold text-red-700 dark:bg-red-700 dark:text-red-200"
+                      exit={{ opacity: 0, y: -20 }}
+                      initial={{ opacity: 0, y: 20 }}
                     >
                       {errorMessage}
                     </motion.div>
                   )}
                   {showDraftSaved && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
                       className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground"
+                      exit={{ opacity: 0, y: -20 }}
+                      initial={{ opacity: 0, y: 20 }}
                     >
                       <Save className="h-4 w-4" />
                       Rascunho salvo automaticamente
@@ -639,38 +642,38 @@ ${window.location.href}
             <div className="mx-auto flex max-w-4xl flex-col items-center space-y-2">
               <div className="flex items-center justify-center space-x-4">
                 <Link
-                  href="https://github.com/JeffyMesquita"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="GitHub"
                   aria-label="GitHub"
+                  href="https://github.com/JeffyMesquita"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="GitHub"
                 >
                   <GithubIcon className="h-6 w-6 text-white" />
                 </Link>
                 <Link
-                  href="https://www.linkedin.com/in/jeferson-mesquita-763bb6b8/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="LinkedIn"
                   aria-label="LinkedIn"
+                  href="https://www.linkedin.com/in/jeferson-mesquita-763bb6b8/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="LinkedIn"
                 >
                   <LinkedinIcon className="h-6 w-6 text-white" />
                 </Link>
                 <Link
-                  href="https://jeffymesquita.dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Portfolio"
                   aria-label="Portfolio"
+                  href="https://jeffymesquita.dev"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Portfolio"
                 >
                   <GlobeIcon className="h-6 w-6 text-white" />
                 </Link>
                 <Link
-                  href="https://www.instagram.com/jeferson.mesquita"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Instagram"
                   aria-label="Instagram"
+                  href="https://www.instagram.com/jeferson.mesquita"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="Instagram"
                 >
                   <InstagramIcon className="h-6 w-6 text-white" />
                 </Link>

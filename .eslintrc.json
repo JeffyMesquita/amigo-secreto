@@ -1,3 +1,112 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "prettier",
+    "import",
+    "unused-imports"
+  ],
+  "rules": {
+    // Regras gerais
+    "prettier/prettier": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "no-console": "warn",
+    "react/react-in-jsx-scope": "off",
+
+    // Regras para TypeScript
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/consistent-type-imports": "warn",
+    "@typescript-eslint/no-floating-promises": "error",
+
+    // Importações
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin", // Módulos nativos (e.g., fs, path)
+          "external", // Pacotes externos (e.g., react, lodash)
+          "internal", // Importações internas do projeto
+          ["parent", "sibling", "index"], // Relativas (e.g., ../file, ./file)
+          "type" // Importações de tipo separadas
+        ],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/newline-after-import": "error",
+    "import/no-unused-modules": "warn",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+
+    // React
+    "react/prop-types": "off",
+    "react/jsx-sort-props": [
+      "error",
+      {
+        "callbacksLast": true,
+        "shorthandFirst": true,
+        "multiline": "ignore",
+        "reservedFirst": true
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {} // Suporte a alias configurados no tsconfig.json
+    }
+  }
 }
