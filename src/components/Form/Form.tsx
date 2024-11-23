@@ -1,13 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,36 +10,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { zodResolver } from "@hookform/resolvers/zod";
+import confetti from "canvas-confetti";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Users,
+  ClipboardCheckIcon,
   Gift,
-  Phone,
-  Plus,
-  Minus,
-  Loader2,
-  Moon,
-  Sun,
-  Save,
-  MessageCircleIcon,
-  ShareIcon,
+  GithubIcon,
   GlobeIcon,
   InstagramIcon,
   LinkedinIcon,
-  GithubIcon,
-  ClipboardCheckIcon,
+  Loader2,
+  Minus,
+  Moon,
+  Phone,
+  Plus,
+  Save,
+  ShareIcon,
+  Sun,
+  Users,
 } from "lucide-react";
-import { FaRegCopy } from "react-icons/fa";
-import { FaWhatsapp } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
-import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { FaRegCopy, FaWhatsapp } from "react-icons/fa";
+import * as z from "zod";
 
 const animatedGradient = `
   @keyframes gradientAnimation {
