@@ -570,7 +570,7 @@ ${window.location.href}
                             {formValues.participants.length > 3 && (
                               <Button
                                 aria-label="Remover participante"
-                                className="mt-2 self-center bg-red-100 text-red-500 hover:bg-red-200 sm:mt-0 sm:self-start"
+                                className="mt-2 w-full min-w-8 self-center bg-red-500 text-purple-200 hover:bg-red-600 hover:text-white dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800 sm:mt-0 sm:w-auto sm:self-start"
                                 size="icon"
                                 title="Remover participante"
                                 type="button"
@@ -579,6 +579,12 @@ ${window.location.href}
                                   handleRemoveParticipant(index, field)
                                 }
                               >
+                                <span className="sm:sr-only">
+                                  Remover{' '}
+                                  <strong className="font-semibold">
+                                    participante
+                                  </strong>
+                                </span>
                                 <Minus className="h-4 w-4" />
                               </Button>
                             )}
