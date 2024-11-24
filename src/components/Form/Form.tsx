@@ -100,15 +100,20 @@ function formatParticipants(data: FormData): FormData {
   };
 }
 
+type ParticipantToRemove = {
+  id: number;
+  name: string;
+  whatsapp: string;
+};
+
 export function Form() {
   const [isStarted, setIsStarted] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [participantToRemove, setParticipantToRemove] = useState<number | null>(
-    null,
-  );
+  const [participantToRemove, setParticipantToRemove] =
+    useState<ParticipantToRemove | null>(null);
   const [showDraftSaved, setShowDraftSaved] = useState(false);
 
   useCheckServerIsAlive({
@@ -282,13 +287,28 @@ ${window.location.href}
     return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
 
-  const handleRemoveParticipant = (index: number) => {
-    setParticipantToRemove(index);
+  const handleRemoveParticipant = (
+    index: number,
+    participantObjs: {
+      name: string;
+      whatsapp: string;
+    } = { name: '', whatsapp: '' },
+  ) => {
+    if (participantObjs.name === '' && participantObjs.whatsapp === '') {
+      remove(index);
+      return;
+    }
+
+    setParticipantToRemove({
+      id: index,
+      name: participantObjs.name,
+      whatsapp: participantObjs.whatsapp,
+    });
   };
 
   const confirmRemoveParticipant = () => {
     if (participantToRemove !== null) {
-      remove(participantToRemove);
+      remove(participantToRemove.id);
       setParticipantToRemove(null);
     }
   };
@@ -547,7 +567,7 @@ ${window.location.href}
                                 </p>
                               )}
                             </div>
-                            {index > 2 && (
+                            {formValues.participants.length > 3 && (
                               <Button
                                 aria-label="Remover participante"
                                 className="mt-2 self-center bg-red-100 text-red-500 hover:bg-red-200 sm:mt-0 sm:self-start"
@@ -555,7 +575,9 @@ ${window.location.href}
                                 title="Remover participante"
                                 type="button"
                                 variant="outline"
-                                onClick={() => handleRemoveParticipant(index)}
+                                onClick={() =>
+                                  handleRemoveParticipant(index, field)
+                                }
                               >
                                 <Minus className="h-4 w-4" />
                               </Button>
@@ -695,8 +717,10 @@ ${window.location.href}
             <AlertDialogHeader>
               <AlertDialogTitle>Remover Participante</AlertDialogTitle>
               <AlertDialogDescription>
-                Tem certeza que deseja remover este participante? Esta ação não
-                pode ser desfeita.
+                Tem certeza que deseja remover o participante{' '}
+                <strong className="font-semibold text-purple-600">
+                  {participantToRemove?.name}
+                </strong>{' '}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
