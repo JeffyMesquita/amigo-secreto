@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 type Participant = {
@@ -11,9 +12,7 @@ type RequestBody = {
   participants: Participant[];
 };
 
-// Limites de requisições
-const MAX_REQUESTS_PER_HOUR = 6;
-const SORT_MAX_REQUESTS = 100;
+const MAX_REQUESTS_PER_HOUR = 100;
 const requestCounts = new Map<string, { count: number; lastReset: number }>();
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL!;
@@ -28,48 +27,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return array;
 }
 
-function getRandomDelay(min: number, max: number): number {
-  return Math.random() * (max - min) + min;
-}
-
-// Função para registrar requisições
-function registerRequest(ip: string) {
-  const now = Date.now();
-  if (!requestCounts.has(ip)) {
-    requestCounts.set(ip, { count: 1, lastReset: now });
-    return true;
-  }
-
-  const data = requestCounts.get(ip)!;
-  if (now - data.lastReset > 60 * 60 * 1000) {
-    requestCounts.set(ip, { count: 1, lastReset: now });
-    return true;
-  }
-
-  data.count += 1;
-  return data.count <= MAX_REQUESTS_PER_HOUR;
-}
-
-async function sendWithRetries(to: string, message: string, retries = 3) {
-  let attempt = 0;
-  while (attempt < retries) {
-    try {
-      console.log(`Enviando mensagem para ${to}: ${message}`);
-      await sendWhatsAppMessage(to, message);
-      console.log(`Mensagem enviada com sucesso para ${to}`);
-      return;
-    } catch (error) {
-      console.error(`Erro no envio. Tentativa ${attempt + 1} de ${retries}`);
-      attempt++;
-      if (attempt === retries) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Espera 2 segundos antes de tentar novamente
-    }
-  }
-}
-
 async function sendWhatsAppMessage(to: string, message: string) {
-  const delay = getRandomDelay(1000, 3000);
-
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
     {
@@ -81,7 +39,7 @@ async function sendWhatsAppMessage(to: string, message: string) {
       body: JSON.stringify({
         number: `55${to}`,
         options: {
-          delay,
+          delay: 1200,
           presence: 'composing',
           linkPreview: false,
         },
@@ -130,41 +88,44 @@ Se precisar de algo mais, estamos aqui para ajudar! 💖
 };
 
 export async function POST(request: Request) {
+  const ip = headers().get('x-forwarded-for') || 'unknown';
   const now = Date.now();
 
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-  if (!registerRequest(ip)) {
-    return NextResponse.json({ error: 'Muitas requisições.' }, { status: 429 });
+  // Check rate limit
+  const userRequests = requestCounts.get(ip) || { count: 0, lastReset: now };
+  if (now - userRequests.lastReset > 3600000) {
+    userRequests.count = 1;
+    userRequests.lastReset = now;
+  } else {
+    userRequests.count++;
+  }
+  requestCounts.set(ip, userRequests);
+
+  if (userRequests.count > MAX_REQUESTS_PER_HOUR) {
+    return NextResponse.json(
+      { error: 'Muitas requisições. Tente novamente mais tarde.' },
+      { status: 429 },
+    );
   }
 
-  try {
-    const body: RequestBody = await request.json();
-    const { participants } = body;
+  const body: RequestBody = await request.json();
 
-    if (!participants || participants.length < 2) {
-      return NextResponse.json(
-        { error: 'Número insuficiente de participantes.' },
-        { status: 400 },
-      );
-    }
+  if (body.participants.length < 3) {
+    return NextResponse.json(
+      { error: 'É necessário pelo menos 3 participantes' },
+      { status: 400 },
+    );
+  }
 
-    if (participants.length > SORT_MAX_REQUESTS) {
-      return NextResponse.json(
-        {
-          error: `Número máximo de participantes excedido. Limite: ${SORT_MAX_REQUESTS}.`,
-        },
-        { status: 400 },
-      );
-    }
+  const shuffled = shuffleArray([...body.participants]);
+  const matches = shuffled.map((participant, index) => ({
+    giver: participant,
+    receiver: shuffled[(index + 1) % shuffled.length],
+  }));
 
-    const shuffled = shuffleArray([...body.participants]);
-    const matches = shuffled.map((participant, index) => ({
-      giver: participant,
-      receiver: shuffled[(index + 1) % shuffled.length],
-    }));
-
-    for (const match of matches) {
-      const message = `
+  // Enviar mensagens usando a Evolution API
+  for (const match of matches) {
+    const message = `
 🎉🎁 Olá ${match.giver.name}! 🎁🎉
 
 Bem-vindo ao nosso incrível Amigo Secreto "${body.title}"! 🥳
@@ -193,30 +154,39 @@ Boa sorte e feliz Amigo Secreto! 🍀
 🎉 Vamos lá, espalhe a diversão e compartilhe com seus amigos! 🌟
 `;
 
-      await sendWithRetries(match.giver.whatsapp, message);
-      const delay = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000; // Delay aleatório entre 1-5s
-      await new Promise((resolve) => setTimeout(resolve, delay));
+    try {
+      await sendWhatsAppMessage(match.giver.whatsapp, message);
+      console.log(message);
+      console.log(
+        `Mensagem enviada para ${match.giver.name} (${match.giver.whatsapp})`,
+      );
+    } catch (error) {
+      console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo entre cada envio
+  }
 
-    const organizerMatches = matches.map((match) => ({
-      giver: match.giver.name,
-      receiver: match.receiver.name,
-    }));
+  // Enviar mensagem para o organizador com a lista de quem tirou quem e uma mensagem de sucesso
 
-    const messageTome = organizerSuccessMessage(body.title, organizerMatches);
-    await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos antes de enviar a mensagem para o organizador
+  const organizerMatches = matches.map((match) => ({
+    giver: match.giver.name,
+    receiver: match.receiver.name,
+  }));
+
+  const messageTome = organizerSuccessMessage(body.title, organizerMatches);
+
+  try {
     await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, messageTome);
-    console.log('Mensagem de sucesso enviada para o organizador', now);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Sorteio concluído com sucesso!',
-    });
+    console.log('Mensagem de sucesso enviada para o organizador');
   } catch (error) {
-    console.error('Erro durante o sorteio:', error, now);
-    return NextResponse.json(
-      { error: 'Erro ao processar o sorteio.' },
-      { status: 500 },
+    console.error(
+      'Erro ao enviar mensagem de sucesso para o organizador:',
+      error,
     );
   }
+
+  return NextResponse.json({
+    success: true,
+    message: 'Sorteio realizado e mensagens enviadas com sucesso',
+  });
 }
