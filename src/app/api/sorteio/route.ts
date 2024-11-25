@@ -55,8 +55,7 @@ async function sendWithRetries(to: string, message: string, retries = 3) {
   while (attempt < retries) {
     try {
       console.log(`Enviando mensagem para ${to}: ${message}`);
-      // Substitua pela função de envio real:
-      // await sendWhatsAppMessage(to, message);
+      await sendWhatsAppMessage(to, message);
       console.log(`Mensagem enviada com sucesso para ${to}`);
       return;
     } catch (error) {
