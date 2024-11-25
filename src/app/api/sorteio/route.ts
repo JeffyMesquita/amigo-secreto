@@ -83,7 +83,15 @@ ${matchList}
 🙏 Obrigado por usar nossa plataforma para organizar seu Amigo Secreto!
 Esperamos que todos tenham uma experiência incrível! 🌈✨
 
-Se precisar de algo mais, estamos aqui para ajudar! 💖`;
+Se precisar de algo mais, estamos aqui para ajudar! 💖
+
+
+🎄🎅 Feliz Natal e um próspero Ano Novo! 🎅🎄
+
+🎉🎊 by Jeferson Mesquita 🎊🎉
+
+confira mais no site:
+🔗 https://amigosecreto.jeffymesquita.dev`;
 };
 
 export async function POST(request: Request) {
