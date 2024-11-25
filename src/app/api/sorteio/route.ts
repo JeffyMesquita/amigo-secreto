@@ -12,7 +12,7 @@ type RequestBody = {
   participants: Participant[];
 };
 
-const MAX_REQUESTS_PER_HOUR = 6;
+const MAX_REQUESTS_PER_HOUR = 100;
 const requestCounts = new Map<string, { count: number; lastReset: number }>();
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL!;
@@ -27,7 +27,31 @@ function shuffleArray<T>(array: T[]): T[] {
   return array;
 }
 
+function getRandomDelay(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
+async function sendWithRetries(
+  to: string,
+  message: string,
+  retries = 3,
+): Promise<void> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await sendWhatsAppMessage(to, message);
+      console.log(`Mensagem enviada para ${to}`);
+      return;
+    } catch (error) {
+      console.error(`Erro no envio para ${to}, tentativa ${attempt}:`, error);
+      if (attempt === retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 segundos entre tentativas
+    }
+  }
+}
+
 async function sendWhatsAppMessage(to: string, message: string) {
+  const delay = getRandomDelay(1000, 3000);
+
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
     {
@@ -39,7 +63,7 @@ async function sendWhatsAppMessage(to: string, message: string) {
       body: JSON.stringify({
         number: `55${to}`,
         options: {
-          delay: 1200,
+          delay,
           presence: 'composing',
           linkPreview: false,
         },
@@ -154,8 +178,10 @@ Boa sorte e feliz Amigo Secreto! 🍀
 🎉 Vamos lá, espalhe a diversão e compartilhe com seus amigos! 🌟
 `;
 
+    const randomDelay = getRandomDelay(1000, 5000);
+
     try {
-      await sendWhatsAppMessage(match.giver.whatsapp, message);
+      await sendWithRetries(match.giver.whatsapp, message);
       console.log(message);
       console.log(
         `Mensagem enviada para ${match.giver.name} (${match.giver.whatsapp})`,
@@ -163,10 +189,11 @@ Boa sorte e feliz Amigo Secreto! 🍀
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo entre cada envio
+    await new Promise((resolve) => setTimeout(resolve, randomDelay)); // Esperar 1 segundo entre cada envio
   }
 
   // Enviar mensagem para o organizador com a lista de quem tirou quem e uma mensagem de sucesso
+  await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos antes de enviar a mensagem para o organizador
 
   const organizerMatches = matches.map((match) => ({
     giver: match.giver.name,
