@@ -162,11 +162,10 @@ Boa sorte e feliz Amigo Secreto! 🍀🎊`;
     receiver: match.receiver.name,
   }));
 
+  const messageTome = organizerSuccessMessage(body.title, organizerMatches);
+
   try {
-    await sendWhatsAppMessage(
-      MY_WHATSAPP_NUMBER,
-      organizerSuccessMessage(body.title, organizerMatches),
-    );
+    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, messageTome);
     console.log('Mensagem de sucesso enviada para o organizador');
   } catch (error) {
     console.error(
