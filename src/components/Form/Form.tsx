@@ -569,6 +569,7 @@ ${window.location.href}
                             </div>
                             {formValues.participants.length > 3 && (
                               <Button
+                                disabled={isSubmitting}
                                 aria-label="Remover participante"
                                 className="mt-2 w-full min-w-8 self-center bg-red-500 text-purple-200 hover:bg-red-600 hover:text-white dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800 sm:mt-0 sm:w-auto sm:self-start"
                                 size="icon"
@@ -596,6 +597,7 @@ ${window.location.href}
                       ))}
                     </AnimatePresence>
                     <Button
+                      disabled={isSubmitting}
                       aria-label="Adicionar participante"
                       className="mt-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800"
                       size="sm"

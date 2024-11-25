@@ -32,6 +32,8 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function sendWhatsAppMessage(to: string, message: string) {
+  const delay = getRandomDelay(1000, 5000 + 1);
+
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
     {
@@ -43,9 +45,9 @@ async function sendWhatsAppMessage(to: string, message: string) {
       body: JSON.stringify({
         number: `55${to}`,
         options: {
-          delay: 1200,
+          delay,
           presence: 'composing',
-          linkPreview: false,
+          linkPreview: true,
         },
 
         text: message,
