@@ -55,6 +55,36 @@ async function sendWhatsAppMessage(to: string, message: string) {
   return await response.json();
 }
 
+const organizerSuccessMessage = (
+  title: string,
+  participants: { giver: string; receiver: string }[],
+) => {
+  const participantCount = participants.length;
+  const matchList = participants
+    .map((p) => `${p.giver} 🎁 ${p.receiver}`)
+    .join('\n');
+
+  return `🎉🎊 Parabéns! Seu Amigo Secreto foi um sucesso! 🎊🎉
+
+🌟 Título do evento: "${title}"
+
+👥 Número de participantes: ${participantCount}
+
+✨ Todas as mensagens foram enviadas com sucesso! Aqui está um resumo do sorteio:
+
+🎁 Lista de quem tirou quem:
+${matchList}
+
+🤫 Lembre-se, isso é só para seus olhos! Mantenha o segredo! 🤐
+
+🎭 Que a diversão comece! Mal posso esperar para ver as surpresas e sorrisos! 😄
+
+🙏 Obrigado por usar nossa plataforma para organizar seu Amigo Secreto!
+Esperamos que todos tenham uma experiência incrível! 🌈✨
+
+Se precisar de algo mais, estamos aqui para ajudar! 💖`;
+};
+
 export async function POST(request: Request) {
   const ip = headers().get('x-forwarded-for') || 'unknown';
   const now = Date.now();
@@ -122,6 +152,26 @@ Boa sorte e feliz Amigo Secreto! 🍀🎊`;
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo entre cada envio
+  }
+
+  // Enviar mensagem para o organizador com a lista de quem tirou quem e uma mensagem de sucesso
+
+  const organizerMatches = matches.map((match) => ({
+    giver: match.giver.name,
+    receiver: match.receiver.name,
+  }));
+
+  try {
+    await sendWhatsAppMessage(
+      '17991305254',
+      organizerSuccessMessage(body.title, organizerMatches),
+    );
+    console.log('Mensagem de sucesso enviada para o organizador');
+  } catch (error) {
+    console.error(
+      'Erro ao enviar mensagem de sucesso para o organizador:',
+      error,
+    );
   }
 
   return NextResponse.json({
