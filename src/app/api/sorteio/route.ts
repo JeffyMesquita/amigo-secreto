@@ -12,6 +12,10 @@ type RequestBody = {
   participants: Participant[];
 };
 
+function getRandomDelay(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
 const MAX_REQUESTS_PER_HOUR = 100;
 const requestCounts = new Map<string, { count: number; lastReset: number }>();
 
@@ -163,7 +167,8 @@ Boa sorte e feliz Amigo Secreto! 🍀
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Esperar 1 segundo entre cada envio
+    const delay = getRandomDelay(1000, 5000 + 1);
+    await new Promise((resolve) => setTimeout(resolve, delay)); // Esperar 1 segundo entre cada envio
   }
 
   // Enviar mensagem para o organizador com a lista de quem tirou quem e uma mensagem de sucesso
@@ -176,6 +181,7 @@ Boa sorte e feliz Amigo Secreto! 🍀
   const messageTome = organizerSuccessMessage(body.title, organizerMatches);
 
   try {
+    await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos antes de enviar a mensagem para o organizador
     await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, messageTome);
     console.log('Mensagem de sucesso enviada para o organizador');
   } catch (error) {
