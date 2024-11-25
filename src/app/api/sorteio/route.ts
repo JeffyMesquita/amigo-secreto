@@ -17,6 +17,7 @@ const requestCounts = new Map<string, { count: number; lastReset: number }>();
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL!;
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY!;
+const MY_WHATSAPP_NUMBER = process.env.MY_WHATSAPP_NUMBER!;
 
 function shuffleArray<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {
@@ -163,7 +164,7 @@ Boa sorte e feliz Amigo Secreto! 🍀🎊`;
 
   try {
     await sendWhatsAppMessage(
-      '17991305254',
+      MY_WHATSAPP_NUMBER,
       organizerSuccessMessage(body.title, organizerMatches),
     );
     console.log('Mensagem de sucesso enviada para o organizador');
