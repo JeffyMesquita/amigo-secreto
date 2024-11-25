@@ -84,14 +84,7 @@ ${matchList}
 Esperamos que todos tenham uma experiência incrível! 🌈✨
 
 Se precisar de algo mais, estamos aqui para ajudar! 💖
-
-
-🎄🎅 Feliz Natal e um próspero Ano Novo! 🎅🎄
-
-🎉🎊 by Jeferson Mesquita 🎊🎉
-
-confira mais no site:
-🔗 https://amigosecreto.jeffymesquita.dev`;
+`;
 };
 
 export async function POST(request: Request) {
@@ -132,7 +125,8 @@ export async function POST(request: Request) {
 
   // Enviar mensagens usando a Evolution API
   for (const match of matches) {
-    const message = `🎉🎁 Olá ${match.giver.name}! 🎁🎉
+    const message = `
+🎉🎁 Olá ${match.giver.name}! 🎁🎉
 
 Bem-vindo ao nosso incrível Amigo Secreto "${body.title}"! 🥳
 
@@ -150,7 +144,16 @@ Lembre-se:
 - Escolha com carinho 💖
 - Divirta-se muito! 😄
 
-Boa sorte e feliz Amigo Secreto! 🍀🎊`;
+Boa sorte e feliz Amigo Secreto! 🍀
+
+💻 Confira mais no nosso site e organize você também seu sorteio de Amigo Secreto:  
+🔗 [Clique aqui para começar](https://amigosecreto.jeffymesquita.dev)  
+
+👨‍💻 Feito com 💙 por *Jeferson Mesquita*.
+
+🎉 Vamos lá, espalhe a diversão e compartilhe com seus amigos! 🌟
+`;
+
     try {
       await sendWhatsAppMessage(match.giver.whatsapp, message);
       console.log(message);
