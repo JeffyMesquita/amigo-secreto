@@ -32,7 +32,8 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function sendWhatsAppMessage(to: string, message: string) {
-  const delay = getRandomDelay(1000, 5000 + 1);
+  const random = getRandomDelay(25, 575);
+  const delay = getRandomDelay(500, 7500 + random);
 
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
@@ -169,7 +170,8 @@ Boa sorte e feliz Amigo Secreto! 🍀
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
-    const delay = getRandomDelay(1000, 5000 + 1);
+    const random = getRandomDelay(25, 575);
+    const delay = getRandomDelay(1000, 5000 + random);
     await new Promise((resolve) => setTimeout(resolve, delay)); // Esperar 1 segundo entre cada envio
   }
 
