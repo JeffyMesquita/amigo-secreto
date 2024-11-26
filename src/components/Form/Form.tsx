@@ -43,6 +43,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
   TooltipContent,
@@ -68,6 +69,7 @@ const animatedGradient = `
 `;
 
 const STORAGE_KEY = 'amigo-secreto-draft';
+const STORAGE_KEY_EMAIL = 'amigo-secreto-draft';
 const STORAGE_THEME = 'amigo-secreto-theme';
 const PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY!;
 
@@ -131,8 +133,7 @@ export function Form() {
     ParticipantToRemoveWhatsApp | ParticipantToRemoveEmail | null
   >(null);
   const [showDraftSaved, setShowDraftSaved] = useState(false);
-
-  const isEmail = true;
+  const [isEmail, setIsEmail] = useState(false);
 
   useCheckServerIsAlive({
     started: isStarted,
@@ -316,23 +317,29 @@ ${window.location.href}
         setIsSubmitting(false);
         toast.dismiss();
 
-        toast.success(
-          <div className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">
-              Amigo Secreto gerado com sucesso!
-            </h3>
-            <p>Os participantes foram notificados.</p>
-            <div className="mt-2 rounded-md bg-yellow-100 p-3">
-              <p className="text-sm font-medium text-yellow-800">
-                ⚠️ Importante: Lembre os participantes de verificarem suas
-                caixas de spam!
-              </p>
-              <p className="mt-1 text-xs text-yellow-700">
-                Os e-mails do Amigo Secreto podem acabar na pasta de spam. Peça
-                a todos que verifiquem e marquem como &quot;não é spam&&quot;.
-              </p>
+        toast.custom(
+          (t) => (
+            <div
+              key={t.id}
+              className="flex flex-col gap-2 bg-white p-4 text-stone-900"
+            >
+              <h3 className="text-lg font-semibold">
+                Amigo Secreto gerado com sucesso!
+              </h3>
+              <p>Os participantes foram notificados.</p>
+              <div className="mt-2 rounded-md bg-yellow-100 p-3">
+                <p className="text-sm font-medium text-yellow-800">
+                  ⚠️ Importante: Lembre os participantes de verificarem suas
+                  caixas de spam!
+                </p>
+                <p className="mt-1 text-xs text-yellow-700">
+                  Os e-mails do Amigo Secreto podem acabar na pasta de spam.
+                  Peça a todos que verifiquem e marquem como &quot;não é
+                  spam&&quot;.
+                </p>
+              </div>
             </div>
-          </div>,
+          ),
           {
             duration: 20000, // 20s
             style: {
@@ -432,7 +439,9 @@ ${window.location.href}
   }, []);
 
   useEffect(() => {
-    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    const savedDraft = localStorage.getItem(
+      !isEmail ? STORAGE_KEY : STORAGE_KEY_EMAIL,
+    );
     if (savedDraft) {
       try {
         const parsedDraft = JSON.parse(savedDraft);
@@ -441,18 +450,21 @@ ${window.location.href}
         console.error('Error loading draft:', error);
       }
     }
-  }, [reset]);
+  }, [reset, isEmail]);
 
   // Auto-save draft
   useEffect(() => {
     const saveTimeout = setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(formValues));
+      localStorage.setItem(
+        !isEmail ? STORAGE_KEY : STORAGE_KEY_EMAIL,
+        JSON.stringify(formValues),
+      );
       setShowDraftSaved(true);
       setTimeout(() => setShowDraftSaved(false), 5000);
     }, 20000);
 
     return () => clearTimeout(saveTimeout);
-  }, [formValues]);
+  }, [formValues, isEmail]);
 
   // Dark mode
   useEffect(() => {
@@ -524,7 +536,7 @@ ${window.location.href}
 
           <main className="flex-grow py-8">
             <Card className="mx-auto w-full max-w-2xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-lg dark:from-purple-900 dark:to-pink-900">
-              <CardHeader className="space-y-1">
+              <CardHeader className="space-y-2">
                 <div className="flex items-center justify-end">
                   <Button
                     aria-label={
@@ -557,6 +569,21 @@ ${window.location.href}
                 </p>
                 <div className="text-center text-sm font-semibold text-muted-foreground">
                   Total de participantes: {fields.length}
+                </div>
+
+                <div className="mx-auto mt-2 flex w-fit flex-col items-start gap-1">
+                  <Label htmlFor="email-toggle" className="font-bold">
+                    {!isEmail ? 'Usar WhatsApp' : 'Usar E-mail'}
+                  </Label>
+                  <Switch
+                    className="mx-auto"
+                    id="email-toggle"
+                    checked={isEmail}
+                    onCheckedChange={() => {
+                      setIsEmail((prev) => !prev);
+                      reset();
+                    }}
+                  />
                 </div>
               </CardHeader>
               <CardContent>
