@@ -21,6 +21,7 @@ import {
   ShareIcon,
   Sun,
   Users,
+  MailIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -66,45 +67,59 @@ const animatedGradient = `
   }
 `;
 
-const participantSchema = z.object({
+const STORAGE_KEY = 'amigo-secreto-draft';
+const STORAGE_THEME = 'amigo-secreto-theme';
+const PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY!;
+
+type ParticipantToRemoveWhatsApp = {
+  id: number;
+  name: string;
+  whatsapp: string;
+};
+
+type ParticipantToRemoveEmail = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+const participantSchemaBase = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(20),
+});
+
+const participantSchemaWhatsApp = participantSchemaBase.extend({
   whatsapp: z
     .string()
     .regex(
-      /^(\(\d{2}\)\s)?\d{4,5}-\d{4}$/,
+      /^($$\d{2}$$\s)?\d{4,5}-\d{4}$/,
       'Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX',
     )
     .min(10, 'Número de telefone inválido'),
 });
 
-const formSchema = z.object({
+const participantSchemaEmail = participantSchemaBase.extend({
+  email: z.string().email('E-mail inválido'),
+});
+
+const formSchemaBase = z.object({
   title: z.string().min(3, 'Título deve ter pelo menos 3 caracteres').max(50),
+});
+
+const formSchemaWhatsApp = formSchemaBase.extend({
   participants: z
-    .array(participantSchema)
+    .array(participantSchemaWhatsApp)
     .min(3, 'É necessário pelo menos 3 participantes'),
 });
 
-type FormData = z.infer<typeof formSchema>;
+const formSchemaEmail = formSchemaBase.extend({
+  participants: z
+    .array(participantSchemaEmail)
+    .min(3, 'É necessário pelo menos 3 participantes'),
+});
 
-const STORAGE_KEY = 'amigo-secreto-draft';
-const STORAGE_THEME = 'amigo-secreto-theme';
-const PIX_KEY = process.env.NEXT_PUBLIC_PIX_KEY!;
-
-function formatParticipants(data: FormData): FormData {
-  return {
-    ...data,
-    participants: data.participants.map((participant) => ({
-      ...participant,
-      whatsapp: participant.whatsapp.replace(/\D/g, ''), // Remove qualquer caractere não numérico
-    })),
-  };
-}
-
-type ParticipantToRemove = {
-  id: number;
-  name: string;
-  whatsapp: string;
-};
+type FormDataWhatsApp = z.infer<typeof formSchemaWhatsApp>;
+type FormDataEmail = z.infer<typeof formSchemaEmail>;
+type FormData = FormDataWhatsApp | FormDataEmail;
 
 export function Form() {
   const [isStarted, setIsStarted] = useState<boolean>(false);
@@ -112,9 +127,12 @@ export function Form() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [participantToRemove, setParticipantToRemove] =
-    useState<ParticipantToRemove | null>(null);
+  const [participantToRemove, setParticipantToRemove] = useState<
+    ParticipantToRemoveWhatsApp | ParticipantToRemoveEmail | null
+  >(null);
   const [showDraftSaved, setShowDraftSaved] = useState(false);
+
+  const isEmail = true;
 
   useCheckServerIsAlive({
     started: isStarted,
@@ -125,20 +143,19 @@ export function Form() {
     control,
     handleSubmit,
     formState: { errors },
-    watch,
     reset,
+    watch,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(isEmail ? formSchemaEmail : formSchemaWhatsApp),
     defaultValues: {
       title: '',
       participants: [
-        { name: '', whatsapp: '' },
-        { name: '', whatsapp: '' },
-        { name: '', whatsapp: '' },
+        { name: '', ...(isEmail ? { email: '' } : { whatsapp: '' }) },
+        { name: '', ...(isEmail ? { email: '' } : { whatsapp: '' }) },
+        { name: '', ...(isEmail ? { email: '' } : { whatsapp: '' }) },
       ],
     },
   });
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'participants',
@@ -223,8 +240,28 @@ ${window.location.href}
     }
   };
 
+  function formatParticipants(data: {
+    title: string;
+    participants: { name: string; whatsapp: string }[];
+  }): FormData {
+    return {
+      ...data,
+      participants: data.participants.map((participant) => ({
+        ...participant,
+        whatsapp: participant.whatsapp.replace(/\D/g, ''), // Remove qualquer caractere não numérico
+      })),
+    };
+  }
+
   const onSubmit = async (data: FormData) => {
-    const formattedData = formatParticipants(data);
+    const formattedData = !isEmail
+      ? formatParticipants(
+          data as {
+            title: string;
+            participants: { name: string; whatsapp: string }[];
+          },
+        )
+      : data;
 
     toast.custom(
       (t) => (
@@ -250,32 +287,94 @@ ${window.location.href}
 
     setIsSubmitting(true);
     setErrorMessage('');
-    try {
-      const response = await fetch('/api/sorteio', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formattedData),
-      });
 
-      const result = await response.json();
+    if (isEmail) {
+      try {
+        const response = await fetch('/api/sorteio-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formattedData),
+        });
 
-      if (response.ok) {
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 5000);
-      } else {
-        throw new Error(result.error || 'Falha ao gerar o Amigo Secreto');
+        const result = await response.json();
+
+        if (response.ok) {
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 5000);
+        } else {
+          throw new Error(result.error || 'Falha ao gerar o Amigo Secreto');
+        }
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : 'Erro ao gerar o Amigo Secreto. Por favor, tente novamente.',
+        );
+      } finally {
+        setIsSubmitting(false);
+        toast.dismiss();
+
+        toast.success(
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-semibold">
+              Amigo Secreto gerado com sucesso!
+            </h3>
+            <p>Os participantes foram notificados.</p>
+            <div className="mt-2 rounded-md bg-yellow-100 p-3">
+              <p className="text-sm font-medium text-yellow-800">
+                ⚠️ Importante: Lembre os participantes de verificarem suas
+                caixas de spam!
+              </p>
+              <p className="mt-1 text-xs text-yellow-700">
+                Os e-mails do Amigo Secreto podem acabar na pasta de spam. Peça
+                a todos que verifiquem e marquem como &quot;não é spam&&quot;.
+              </p>
+            </div>
+          </div>,
+          {
+            duration: 20000, // 20s
+            style: {
+              background: 'white',
+              color: 'black',
+              border: '1px solid #e2e8f0',
+              padding: '16px',
+              borderRadius: '8px',
+              boxShadow:
+                '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            },
+          },
+        );
       }
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Erro ao gerar o Amigo Secreto. Por favor, tente novamente.',
-      );
-    } finally {
-      setIsSubmitting(false);
-      toast.dismiss();
+    } else {
+      try {
+        const response = await fetch('/api/sorteio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formattedData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 5000);
+        } else {
+          throw new Error(result.error || 'Falha ao gerar o Amigo Secreto');
+        }
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : 'Erro ao gerar o Amigo Secreto. Por favor, tente novamente.',
+        );
+      } finally {
+        setIsSubmitting(false);
+        toast.dismiss();
+      }
     }
   };
 
@@ -289,12 +388,22 @@ ${window.location.href}
 
   const handleRemoveParticipant = (
     index: number,
-    participantObjs: {
-      name: string;
-      whatsapp: string;
-    } = { name: '', whatsapp: '' },
+    participantObjs:
+      | {
+          name: string;
+          whatsapp: string;
+        }
+      | {
+          name: string;
+          email: string;
+        },
   ) => {
-    if (participantObjs.name === '' && participantObjs.whatsapp === '') {
+    if (
+      participantObjs.name === '' &&
+      ('whatsapp' in participantObjs
+        ? participantObjs.whatsapp === ''
+        : participantObjs.email === '')
+    ) {
       remove(index);
       return;
     }
@@ -302,7 +411,7 @@ ${window.location.href}
     setParticipantToRemove({
       id: index,
       name: participantObjs.name,
-      whatsapp: participantObjs.whatsapp,
+      whatsapp: 'whatsapp' in participantObjs ? participantObjs.whatsapp : '',
     });
   };
 
@@ -532,21 +641,35 @@ ${window.location.href}
                             </div>
                             <div className="w-full flex-1 overflow-hidden rounded-md">
                               <div className="relative bg-purple-50">
-                                <FaWhatsapp className="absolute left-3 top-1/2 size-6 -translate-y-1/2 transform text-purple-500" />
+                                {isEmail ? (
+                                  <MailIcon className="absolute left-3 top-1/2 size-6 -translate-y-1/2 transform text-purple-500" />
+                                ) : (
+                                  <FaWhatsapp className="absolute left-3 top-1/2 size-6 -translate-y-1/2 transform text-purple-500" />
+                                )}
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Controller
                                       control={control}
-                                      name={`participants.${index}.whatsapp`}
+                                      name={
+                                        `participants.${index}.${isEmail ? 'email' : 'whatsapp'}` as const
+                                      }
                                       render={({ field }) => (
                                         <Input
                                           {...field}
                                           className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
-                                          maxLength={15}
-                                          placeholder="(XX) XXXXX-XXXX"
+                                          maxLength={isEmail ? undefined : 15}
+                                          placeholder={
+                                            isEmail
+                                              ? 'email@exemplo.com'
+                                              : '(XX) XXXXX-XXXX'
+                                          }
                                           onChange={(e) =>
                                             field.onChange(
-                                              formatWhatsApp(e.target.value),
+                                              isEmail
+                                                ? e.target.value
+                                                : formatWhatsApp(
+                                                    e.target.value,
+                                                  ),
                                             )
                                           }
                                         />
@@ -554,18 +677,28 @@ ${window.location.href}
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Digite o número do WhatsApp com DDD</p>
+                                    <p>
+                                      {isEmail
+                                        ? 'Digite o email do participante'
+                                        : 'Digite o número do WhatsApp com DDD'}
+                                    </p>
                                   </TooltipContent>
                                 </Tooltip>
                               </div>
-                              {errors.participants?.[index]?.whatsapp && (
-                                <p className="mt-1 text-sm text-red-500">
-                                  {
-                                    errors.participants[index]?.whatsapp
-                                      ?.message
-                                  }
-                                </p>
-                              )}
+                              {errors.participants?.[index] &&
+                                (isEmail ? (
+                                  <p className="mt-1 text-sm text-red-500">
+                                    {'email' in errors.participants[index] &&
+                                      errors.participants[index]?.email
+                                        ?.message}
+                                  </p>
+                                ) : (
+                                  <p className="mt-1 text-sm text-red-500">
+                                    {'whatsapp' in errors.participants[index] &&
+                                      errors.participants[index]?.whatsapp
+                                        ?.message}
+                                  </p>
+                                ))}
                             </div>
                             {formValues.participants.length > 3 && (
                               <Button
