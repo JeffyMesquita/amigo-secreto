@@ -99,6 +99,32 @@ function generateParticipantMessage(
         👨‍💻 Feito com 💙 por <strong>Jeferson Mesquita</strong>.
     </p>
 
+     <div style="margin-top: 30px; border-top: 1px solid #4a0e4e; padding-top: 20px;">
+        <h4 style="color: #4a0e4e; text-align: center;">Contato do Organizador</h4>
+        <ul style="list-style-type: none; padding-left: 0; text-align: center;">
+            <li style="margin-bottom: 10px;">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/whatsapp.svg" alt="WhatsApp" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;">
+                <a href="https://wa.me/5517991305254" style="color: #4a0e4e; text-decoration: none;">+55 17 99130 5254</a>
+            </li>
+            <li style="margin-bottom: 10px;">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/envelope.svg" alt="Email" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;">
+                <a href="mailto:je_2742@hotmail.com" style="color: #4a0e4e; text-decoration: none;">je_2742@hotmail.com</a>
+            </li>
+            <li style="margin-bottom: 10px;">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/linkedin.svg" alt="LinkedIn" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;">
+                <a href="https://www.linkedin.com/in/jeferson-mesquita-763bb6b8/" style="color: #4a0e4e; text-decoration: none;">LinkedIn</a>
+            </li>
+            <li style="margin-bottom: 10px;">
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/github.svg" alt="GitHub" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;">
+                <a href="https://github.com/JeffyMesquita" style="color: #4a0e4e; text-decoration: none;">GitHub</a>
+            </li>
+            <li>
+                <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/instagram.svg" alt="Instagram" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 5px;">
+                <a href="https://www.instagram.com/jeferson.mesquita/" style="color: #4a0e4e; text-decoration: none;">Instagram</a>
+            </li>
+        </ul>
+    </div>
+
     <p style="font-size: 16px; text-align: center; font-style: italic;">
         🎉 Vamos lá, espalhe a diversão e compartilhe com seus amigos! 🌟
     </p>
