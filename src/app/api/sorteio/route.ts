@@ -31,6 +31,37 @@ function shuffleArray<T>(array: T[]): T[] {
   return array;
 }
 
+function formatParticipantList(participants: Participant[]): string {
+  return participants
+    .map((p, index) => `${index + 1}. ${p.name}: ${p.whatsapp}`)
+    .join('\n');
+}
+
+async function sendParticipantListToAdmin(
+  title: string,
+  participants: Participant[],
+) {
+  const participantList = formatParticipantList(participants);
+  const message = `
+🎉 Novo Amigo Secreto: "${title}"
+
+👥 Lista de Participantes:
+${participantList}
+
+🔍 Por favor, verifique os dados acima antes de prosseguir com o sorteio.
+`;
+
+  try {
+    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, message);
+    console.log('Lista de participantes enviada para o administrador');
+  } catch (error) {
+    console.error(
+      'Erro ao enviar lista de participantes para o administrador:',
+      error,
+    );
+  }
+}
+
 async function sendWhatsAppMessage(to: string, message: string) {
   const random = getRandomDelay(25, 575);
   const delay = getRandomDelay(500, 7500 + random);
@@ -123,6 +154,12 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+
+  await sendParticipantListToAdmin(body.title, body.participants);
+
+  const otherDelay = getRandomDelay(1000, 5000 + getRandomDelay(25, 575));
+
+  await new Promise((resolve) => setTimeout(resolve, otherDelay));
 
   const shuffled = shuffleArray([...body.participants]);
   const matches = shuffled.map((participant, index) => ({
