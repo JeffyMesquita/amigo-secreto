@@ -90,13 +90,16 @@ const participantSchemaBase = z.object({
 });
 
 const participantSchemaWhatsApp = participantSchemaBase.extend({
-  whatsapp: z
-    .string()
-    .regex(
-      /^($$\d{2}$$\s)?\d{4,5}-\d{4}$/,
-      'Formato inválido. Use (XX) XXXX-XXXX ou (XX) XXXXX-XXXX',
-    )
-    .min(10, 'Número de telefone inválido'),
+  whatsapp: z.string().refine(
+    (value) => {
+      const regex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+      return regex.test(value);
+    },
+    {
+      message:
+        "O número de WhatsApp deve estar no formato '(XX) XXXX-XXXX' ou '(XX) XXXXX-XXXX'.",
+    },
+  ),
 });
 
 const participantSchemaEmail = participantSchemaBase.extend({
@@ -241,27 +244,15 @@ ${window.location.href}
     }
   };
 
-  function formatParticipants(data: {
-    title: string;
-    participants: { name: string; whatsapp: string }[];
-  }): FormData {
-    return {
-      ...data,
-      participants: data.participants.map((participant) => ({
-        ...participant,
-        whatsapp: participant.whatsapp.replace(/\D/g, ''), // Remove qualquer caractere não numérico
-      })),
-    };
-  }
-
   const onSubmit = async (data: FormData) => {
     const formattedData = !isEmail
-      ? formatParticipants(
-          data as {
-            title: string;
-            participants: { name: string; whatsapp: string }[];
-          },
-        )
+      ? {
+          ...data,
+          participants: (data as FormDataWhatsApp).participants.map((p) => ({
+            ...p,
+            whatsapp: p.whatsapp.replace(/\D/g, ''),
+          })),
+        }
       : data;
 
     toast.custom(
@@ -690,15 +681,15 @@ ${window.location.href}
                                               ? 'email@exemplo.com'
                                               : '(XX) XXXXX-XXXX'
                                           }
-                                          onChange={(e) =>
+                                          onChange={(e) => {
                                             field.onChange(
                                               isEmail
-                                                ? e.target.value
+                                                ? e.currentTarget.value
                                                 : formatWhatsApp(
-                                                    e.target.value,
+                                                    e.currentTarget.value,
                                                   ),
-                                            )
-                                          }
+                                            );
+                                          }}
                                         />
                                       )}
                                     />
