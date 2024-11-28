@@ -14,14 +14,15 @@ import {
   InstagramIcon,
   LinkedinIcon,
   Loader2,
+  MailIcon,
   Minus,
   Moon,
   Plus,
   Save,
   ShareIcon,
   Sun,
+  UserPenIcon,
   Users,
-  MailIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -43,7 +44,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
   TooltipContent,
@@ -108,6 +108,10 @@ const participantSchemaEmail = participantSchemaBase.extend({
 
 const formSchemaBase = z.object({
   title: z.string().min(3, 'Título deve ter pelo menos 3 caracteres').max(50),
+  organizer: z
+    .string()
+    .min(2, 'Nome do organizador deve ter pelo menos 2 caracteres')
+    .max(50),
 });
 
 const formSchemaWhatsApp = formSchemaBase.extend({
@@ -153,6 +157,7 @@ export function Form() {
     resolver: zodResolver(isEmail ? formSchemaEmail : formSchemaWhatsApp),
     defaultValues: {
       title: '',
+      organizer: '',
       participants: [
         { name: '', ...(isEmail ? { email: '' } : { whatsapp: '' }) },
         { name: '', ...(isEmail ? { email: '' } : { whatsapp: '' }) },
@@ -305,6 +310,8 @@ ${window.location.href}
             : 'Erro ao gerar o Amigo Secreto. Por favor, tente novamente.',
         );
       } finally {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_KEY_EMAIL);
         setIsSubmitting(false);
         toast.dismiss();
 
@@ -372,6 +379,8 @@ ${window.location.href}
       } finally {
         setIsSubmitting(false);
         toast.dismiss();
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_KEY_EMAIL);
       }
     }
   };
@@ -562,19 +571,25 @@ ${window.location.href}
                   Total de participantes: {fields.length}
                 </div>
 
-                <div className="mx-auto mt-2 flex w-fit flex-col items-start gap-1">
-                  <Label htmlFor="email-toggle" className="font-bold">
-                    {!isEmail ? 'Usar WhatsApp' : 'Usar E-mail'}
-                  </Label>
-                  <Switch
-                    className="mx-auto"
-                    id="email-toggle"
-                    checked={isEmail}
-                    onCheckedChange={() => {
-                      setIsEmail((prev) => !prev);
-                      reset();
-                    }}
-                  />
+                <div className="flex justify-center space-x-4">
+                  <Button
+                    type="button"
+                    variant={isEmail ? 'outline' : 'default'}
+                    className={`flex items-center space-x-2 ${isEmail ? '' : 'bg-green-500 text-white hover:bg-green-600'}`}
+                    onClick={() => setIsEmail(false)}
+                  >
+                    <FaWhatsapp className="h-5 w-5" />
+                    <span>WhatsApp</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={isEmail ? 'default' : 'outline'}
+                    className={`flex items-center space-x-2 ${isEmail ? 'bg-blue-500 text-white hover:bg-blue-600' : ''}`}
+                    onClick={() => setIsEmail(true)}
+                  >
+                    <MailIcon className="h-5 w-5" />
+                    <span>Email</span>
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent>
@@ -615,6 +630,39 @@ ${window.location.href}
                       </p>
                     )}
                   </motion.div>
+
+                  <motion.div
+                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: -20 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.5,
+                      type: 'spring',
+                      stiffness: 100,
+                    }}
+                  >
+                    <Label htmlFor="organizer" className="font-semibold">
+                      Organizador
+                    </Label>
+                    <div className="relative overflow-hidden rounded-md bg-purple-50">
+                      <UserPenIcon className="absolute left-3 top-1/2 -translate-y-1/2 transform text-purple-500" />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Input
+                            id="organizer"
+                            {...register('organizer')}
+                            className="border-purple-300 pl-10 font-semibold text-zinc-900 focus:border-pink-500 focus:ring-pink-500 dark:text-zinc-900"
+                            maxLength={50}
+                            placeholder="Nome/Apelido"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Digite seu nome ou apelido como organizador</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </motion.div>
+
                   <div className="space-y-4">
                     <Label className="font-semibold">
                       Participantes (mínimo 3)

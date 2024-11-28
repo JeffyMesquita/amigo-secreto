@@ -9,6 +9,7 @@ type Participant = {
 
 type RequestBody = {
   title: string;
+  organizer: string;
   participants: Participant[];
 };
 
@@ -39,11 +40,14 @@ function formatParticipantList(participants: Participant[]): string {
 
 async function sendParticipantListToAdmin(
   title: string,
+  organizer: string,
   participants: Participant[],
 ) {
   const participantList = formatParticipantList(participants);
   const message = `
 🎉 Novo Amigo Secreto: "${title}"
+
+👤 Organizador: ${organizer}
 
 👥 Lista de Participantes:
 ${participantList}
@@ -96,6 +100,7 @@ async function sendWhatsAppMessage(to: string, message: string) {
 
 const organizerSuccessMessage = (
   title: string,
+  organizer: string,
   participants: { giver: string; receiver: string }[],
 ) => {
   const participantCount = participants.length;
@@ -106,6 +111,8 @@ const organizerSuccessMessage = (
   return `🎉🎊 Parabéns! Seu Amigo Secreto foi um sucesso! 🎊🎉
 
 🌟 Título do evento: "${title}"
+
+👨‍💼 Organizador: ${organizer}
 
 👥 Número de participantes: ${participantCount}
 
@@ -155,9 +162,13 @@ export async function POST(request: Request) {
     );
   }
 
-  await sendParticipantListToAdmin(body.title, body.participants);
+  await sendParticipantListToAdmin(
+    body.title,
+    body.organizer,
+    body.participants,
+  );
 
-  const otherDelay = getRandomDelay(1000, 5000 + getRandomDelay(25, 575));
+  const otherDelay = getRandomDelay(500, 2500 + getRandomDelay(25, 575));
 
   await new Promise((resolve) => setTimeout(resolve, otherDelay));
 
@@ -173,6 +184,10 @@ export async function POST(request: Request) {
 🎉🎁 Olá ${match.giver.name}! 🎁🎉
 
 Bem-vindo ao nosso incrível Amigo Secreto "${body.title}"! 🥳
+
+Nosso organizador é ${body.organizer} e ele preparou tudo com muito carinho! 💖
+
+Vejamos quem você tirou? 🤔
 
 Temos uma surpresa especial para você... 🤫
 Prepare-se para descobrir quem é a pessoa sortuda que você vai presentear! 🎁
@@ -219,7 +234,11 @@ Boa sorte e feliz Amigo Secreto! 🍀
     receiver: match.receiver.name,
   }));
 
-  const messageTome = organizerSuccessMessage(body.title, organizerMatches);
+  const messageTome = organizerSuccessMessage(
+    body.title,
+    body.organizer,
+    organizerMatches,
+  );
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos antes de enviar a mensagem para o organizador
