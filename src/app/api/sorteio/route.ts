@@ -42,6 +42,7 @@ async function sendParticipantListToAdmin(
   title: string,
   organizer: string,
   participants: Participant[],
+  delayValue: number,
 ) {
   const participantList = formatParticipantList(participants);
   const message = `
@@ -56,7 +57,7 @@ ${participantList}
 `;
 
   try {
-    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, message);
+    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, message, delayValue);
     console.log('Lista de participantes enviada para o administrador');
   } catch (error) {
     console.error(
@@ -66,10 +67,7 @@ ${participantList}
   }
 }
 
-async function sendWhatsAppMessage(to: string, message: string) {
-  const random = getRandomDelay(25, 575);
-  const delay = getRandomDelay(500, 7500 + random);
-
+async function sendWhatsAppMessage(to: string, message: string, delay: number) {
   const response = await fetch(
     `${EVOLUTION_API_URL}/message/sendText/amigosecreto`,
     {
@@ -161,11 +159,14 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  const random = getRandomDelay(25, 575);
+  const delay = getRandomDelay(500, 500 + random);
 
   await sendParticipantListToAdmin(
     body.title,
     body.organizer,
     body.participants,
+    delay,
   );
 
   const otherDelay = getRandomDelay(500, 2500 + getRandomDelay(25, 575));
@@ -215,7 +216,9 @@ Boa sorte e feliz Amigo Secreto! 🍀
 `;
 
     try {
-      await sendWhatsAppMessage(match.giver.whatsapp, message);
+      const random = getRandomDelay(25, 575);
+      const delay = getRandomDelay(500, 5000 + random);
+      await sendWhatsAppMessage(match.giver.whatsapp, message, delay);
       console.log(message);
       console.log(
         `Mensagem enviada para ${match.giver.name} (${match.giver.whatsapp})`,
@@ -223,9 +226,8 @@ Boa sorte e feliz Amigo Secreto! 🍀
     } catch (error) {
       console.error(`Erro ao enviar mensagem para ${match.giver.name}:`, error);
     }
-    const random = getRandomDelay(25, 575);
-    const delay = getRandomDelay(1000, 5000 + random);
-    await new Promise((resolve) => setTimeout(resolve, delay)); // Esperar 1 segundo entre cada envio
+
+    await new Promise((resolve) => setTimeout(resolve, delay + random)); // Esperar 1 segundo entre cada envio
   }
 
   // Enviar mensagem para o organizador com a lista de quem tirou quem e uma mensagem de sucesso
@@ -242,8 +244,10 @@ Boa sorte e feliz Amigo Secreto! 🍀
   );
 
   try {
+    const random = getRandomDelay(25, 575);
+    const delay = getRandomDelay(500, 5000 + random);
     await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos antes de enviar a mensagem para o organizador
-    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, messageTome);
+    await sendWhatsAppMessage(MY_WHATSAPP_NUMBER, messageTome, delay);
     console.log('Mensagem de sucesso enviada para o organizador');
   } catch (error) {
     console.error(
