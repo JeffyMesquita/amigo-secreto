@@ -97,6 +97,8 @@ async function sendWhatsAppMessage(
         },
       );
 
+      await new Promise((resolve) => setTimeout(resolve, delay));
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -110,7 +112,9 @@ async function sendWhatsAppMessage(
 
       // Add a delay between retries if needed
       if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+        await new Promise((resolve) =>
+          setTimeout(resolve, delay * (attempt / 100)),
+        );
       }
 
       return data;
