@@ -211,9 +211,10 @@ export async function POST(request: Request) {
     }
 
     const shuffled = shuffleArray([...body.participants]);
-    const matches = shuffled.map((participant, index) => ({
+    const doubleShuffled = shuffleArray([...shuffled]);
+    const matches = doubleShuffled.map((participant, index) => ({
       giver: participant,
-      receiver: shuffled[(index + 1) % shuffled.length],
+      receiver: doubleShuffled[(index + 1) % shuffled.length],
     }));
 
     for (const match of matches) {
