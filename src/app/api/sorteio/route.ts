@@ -199,7 +199,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const initialDelay = getRandomDelay(500, 1000);
+    const initialDelay = getRandomDelay(500, 5000);
 
     await sendParticipantListToAdmin(
       body.title,
@@ -256,6 +256,7 @@ Boa sorte e feliz Amigo Secreto! 🍀
       try {
         const random = getRandomDelay(25, 575);
         const messageDelay = getRandomDelay(500, 3000 + random);
+        await new Promise((resolve) => setTimeout(resolve, messageDelay)); // Esperar 1 segundo antes de enviar a mensagem
         await sendWhatsAppMessage(match.giver.whatsapp, message, messageDelay);
         console.log(message);
         console.log(
